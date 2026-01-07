@@ -1,160 +1,349 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudyOS | Premium</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        :root { --p: #6366f1; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --border: #e2e8f0; --accent: #f43f5e; }
-        .dark { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --border: #334155; }
-        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
-        body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 50px; }
-        #sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--card); border-right: 1px solid var(--border); z-index: 1500; padding: 25px; display: flex; flex-direction: column; }
-        #sidebar.open { left: 0; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; z-index: 1400; backdrop-filter: blur(4px); }
-        .container { max-width: 900px; margin: auto; padding: 20px; }
-        .main-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
-        .grid-stats { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .stat-box { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid var(--border); text-align: center; }
-        .streak-big { border: 2px solid #fbbf24; background: linear-gradient(135deg, var(--card), #fffbeb); grid-row: span 1; }
-        .scene { width: 100%; height: 250px; perspective: 1000px; cursor: pointer; }
-        .card-3d { width: 100%; height: 100%; position: relative; transition: 0.6s; transform-style: preserve-3d; }
-        .card-3d.flipped { transform: rotateY(180deg); }
-        .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; display: flex; align-items: center; justify-content: center; padding: 20px; font-weight: 600; border: 2px solid var(--p); background: var(--card); }
-        .back { transform: rotateY(180deg); background: var(--p); color: white; }
-        .slide-anim { animation: slide 0.4s ease-in-out; }
-        @keyframes slide { 0% { transform: translateX(50px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
-        .pomo-circle { width: 180px; height: 180px; border-radius: 50%; border: 8px solid var(--p); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 800; margin: 20px auto; }
-        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .btn { padding: 15px; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; background: var(--p); color: white; width: 100%; }
-        .btn-sec { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
-        .t-item { display: flex; align-items: center; padding: 12px; background: var(--bg); border-radius: 12px; margin-bottom: 8px; }
-        .section { display: none; animation: slide 0.3s; }
-        .active { display: block; }
-        @media (min-width: 992px) { body { padding-left: 280px; } #sidebar { left: 0; } #menu-btn { display: none; } }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>StudyOS | Premium Suite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --p: #6366f1; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --border: #e2e8f0; --accent: #f43f5e; }
+        .dark { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --border: #334155; }
+        
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.3s, color 0.3s; }
+        body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 50px; min-height: 100vh; overflow-x: hidden; }
+        /* SIDEBAR & NAV */
+        #sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--card); border-right: 1px solid var(--border); z-index: 1500; padding: 25px; transition: 0.3s; display: flex; flex-direction: column; }
+        #sidebar.open { left: 0; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; z-index: 1400; backdrop-filter: blur(4px); }
+        
+        @media (min-width: 992px) {
+            body { padding-left: 280px; }
+            #sidebar { left: 0 !important; }
+            #menu-btn { display: none !important; }
+        }
+        /* DASHBOARD & STREAK */
+        .container { max-width: 1000px; margin: auto; padding: 20px; }
+        .main-card { background: var(--card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); margin-bottom: 20px; }
+        
+        .grid-stats { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stat-box { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid var(--border); text-align: center; display: flex; flex-direction: column; justify-content: center; }
+        .streak-big { border: 2px solid #fbbf24; background: linear-gradient(135deg, var(--card), #fffbeb); }
+        .dark .streak-big { background: linear-gradient(135deg, var(--card), #451a03); }
+        /* FLASHCARD 3D TRANSITION */
+        .scene { width: 100%; height: 300px; perspective: 1200px; cursor: pointer; margin-bottom: 20px; }
+        .card-3d { width: 100%; height: 100%; position: relative; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+        .card-3d.is-flipped { transform: rotateY(180deg); }
+        
+        /* The specific 3D "Slide & Flip" animation for next/prev */
+        .slide-out { animation: slideOut 0.5s forwards; }
+        @keyframes slideOut { 
+            0% { transform: translateZ(0) rotateY(0); opacity: 1; }
+            50% { transform: translateZ(-200px) rotateY(90deg); opacity: 0.5; }
+            100% { transform: translateZ(0) rotateY(0); opacity: 1; }
+        }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 24px; border: 2px solid var(--p); background: var(--card); padding: 30px; text-align: center; font-size: 1.3rem; font-weight: 600; }
+        .card-back { transform: rotateY(180deg); background: var(--p); color: white; border: none; }
+        /* POMODORO & CALC */
+        .pomo-display { width: 200px; height: 200px; border-radius: 50%; border: 10px solid var(--p); display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 800; margin: 20px auto; color: var(--p); position: relative; }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .calc-btn { padding: 20px; border-radius: 15px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-weight: 700; cursor: pointer; font-size: 1.1rem; }
+        .calc-btn:hover { background: var(--p); color: white; }
+        /* TASK UI */
+        .t-item { display: flex; align-items: center; padding: 15px; background: var(--bg); border-radius: 15px; margin-bottom: 12px; border: 1px solid var(--border); }
+        .t-check { width: 24px; height: 24px; border-radius: 8px; border: 2.5px solid var(--p); margin-right: 15px; cursor: pointer; transition: 0.2s; }
+        .t-done { opacity: 0.5; text-decoration: line-through; }
+        
+        .btn-p { background: var(--p); color: white; border: none; padding: 15px; border-radius: 15px; font-weight: 700; cursor: pointer; width: 100%; }
+        .section { display: none; }
+        .section.active { display: block; }
+    </style>
 </head>
 <body class="light">
-    <div id="auth-gate" style="position:fixed; inset:0; background:white; z-index:2000; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-        <h1>⚡ StudyOS</h1>
-        <button class="btn" id="login-google" style="width:250px">Sign in with Google</button>
-    </div>
-    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-    <div id="sidebar">
-        <h2 id="side-name">Scholar</h2>
-        <div onclick="openPage('dash')" style="padding:15px 0; cursor:pointer;">🏠 Dashboard</div>
-        <div onclick="openPage('flash')" style="padding:15px 0; cursor:pointer;">📚 Flashcards</div>
-        <div onclick="openPage('pomo')" style="padding:15px 0; cursor:pointer;">⏱️ Pomodoro</div>
-        <div onclick="openPage('calc')" style="padding:15px 0; cursor:pointer;">🔢 Calculator</div>
-        <div onclick="openPage('settings')" style="padding:15px 0; cursor:pointer;">⚙️ Settings</div>
-        <button class="btn" onclick="toggleDarkMode()" style="margin-top:auto">🌗 Night Mode</button>
-        <button class="btn" style="margin-top:10px; background:var(--accent)" id="logout">Logout</button>
-    </div>
-    <header style="padding:15px; background:var(--card); display:flex; justify-content:space-between; border-bottom:1px solid var(--border); sticky; top:0; z-index:1000;">
-        <button onclick="toggleMenu()" id="menu-btn" style="background:none; border:none; font-size:1.5rem;">☰</button>
-        <div style="font-weight:800;">StudyOS</div>
-        <div id="head-pfp" style="width:35px; height:35px; border-radius:10px; background:var(--p); color:white; display:flex; align-items:center; justify-content:center;">G</div>
-    </header>
-    <main class="container">
-        <div id="dash" class="section active">
-            <h2 id="welcome">Hi, User!</h2>
-            <div class="grid-stats">
-                <div class="stat-box streak-big">🔥 <span id="streak-val" style="font-size:2rem; display:block;">1</span> Streak</div>
-                <div class="stat-box">✅ <span id="task-stat">0</span> Tasks</div>
-                <div class="stat-box">📖 <span id="fc-stat">0</span> Cards</div>
-            </div>
-            <div class="main-card">
-                <h3>To-Do List</h3>
-                <div style="display:flex; gap:10px; margin-bottom:15px;">
-                    <input type="text" id="t-in" style="flex:1; padding:12px; border-radius:12px; border:1px solid var(--border);">
-                    <button class="btn" onclick="addTask()" style="width:50px">+</button>
-                </div>
-                <div id="t-list"></div>
-            </div>
-        </div>
-        <div id="flash" class="section">
-            <div class="scene" onclick="this.children[0].classList.toggle('flipped')">
-                <div class="card-3d" id="fc-card">
-                    <div class="face" id="fc-f">No cards</div>
-                    <div class="face back" id="fc-b">Add one below</div>
-                </div>
-            </div>
-            <div style="display:flex; justify-content:space-between; margin:20px 0;">
-                <button class="btn-sec" onclick="moveFC(-1)" style="padding:10px 20px">◀</button>
-                <span id="fc-page">0/0</span>
-                <button class="btn-sec" onclick="moveFC(1)" style="padding:10px 20px">▶</button>
-            </div>
-            <div class="main-card">
-                <input type="text" id="fc-q" placeholder="Front" style="width:100%; padding:10px; margin-bottom:10px;">
-                <input type="text" id="fc-a" placeholder="Back" style="width:100%; padding:10px; margin-bottom:10px;">
-                <button class="btn" onclick="addFC()">Add Card</button>
-            </div>
-        </div>
-        <div id="pomo" class="section">
-            <div class="main-card" style="text-align:center;">
-                <div class="pomo-circle" id="p-timer">25:00</div>
-                <input type="number" id="p-min" placeholder="Mins" style="width:80px; padding:10px; text-align:center;">
-                <div style="display:flex; gap:10px; margin-top:20px;">
-                    <button class="btn" onclick="startPomo()">Start</button>
-                    <button class="btn-sec" onclick="pausePomo()">Pause</button>
-                </div>
-            </div>
-        </div>
-        <div id="calc" class="section">
-            <div class="main-card">
-                <input type="text" id="c-scr" readonly style="width:100%; padding:20px; font-size:1.5rem; text-align:right; margin-bottom:15px;">
-                <div class="calc-grid">
-                    <button class="btn-sec" onclick="cBtn('C')">C</button><button class="btn-sec" onclick="cBtn('/')">/</button><button class="btn-sec" onclick="cBtn('*')">*</button><button class="btn-sec" onclick="cBtn('-')">-</button>
-                    <button class="btn-sec" onclick="cBtn('7')">7</button><button class="btn-sec" onclick="cBtn('8')">8</button><button class="btn-sec" onclick="cBtn('9')">9</button><button class="btn" onclick="cBtn('+')">+</button>
-                    <button class="btn-sec" onclick="cBtn('4')">4</button><button class="btn-sec" onclick="cBtn('5')">5</button><button class="btn-sec" onclick="cBtn('6')">6</button><button class="btn" onclick="solve()">=</button>
-                </div>
-            </div>
-        </div>
-        <div id="settings" class="section">
-            <div class="main-card">
-                <h3>Settings</h3>
-                <input type="text" id="name-in" placeholder="New Name" style="width:100%; padding:10px; margin-bottom:10px;">
-                <button class="btn" onclick="saveSet()">Save</button>
-            </div>
-        </div>
-    </main>
-    <script type="module">
-        import { firebaseConfig } from './config.js';
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app), prov = new GoogleAuthProvider();
-        let d = { tasks: [], fc: [], streak: 1, last: null, name: "Girish" }, uid = null, fcI = 0, tmr = null, left = 1500;
-        onAuthStateChanged(auth, async (u) => { if(u) { uid = u.uid; const s = await getDoc(doc(db, "u", uid)); if(s.exists()) { d = s.data(); hStrk(); } else { d.last = new Date().toISOString(); } document.getElementById('auth-gate').style.display='none'; syn(); } });
-        const hStrk = () => { const t = new Date().toDateString(), l = d.last ? new Date(d.last).toDateString() : null; if(l !== t) { const y = new Date(); y.setDate(y.getDate()-1); d.streak = (l === y.toDateString()) ? d.streak + 1 : 1; d.last = new Date().toISOString(); } };
-        const syn = async () => { if(uid) await setDoc(doc(db, "u", uid), d); ren(); };
-        window.toggleMenu = () => { const s = document.getElementById('sidebar'); s.classList.toggle('open'); document.getElementById('overlay').style.display = s.classList.contains('open') ? 'block' : 'none'; };
-        window.openPage = (p) => { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.getElementById(p).classList.add('active'); if(window.innerWidth < 992) toggleMenu(); };
-        window.toggleDarkMode = () => document.body.classList.toggle('dark');
-        window.addTask = () => { const v = document.getElementById('t-in').value; if(v) { d.tasks.push({t: v, d: false}); document.getElementById('t-in').value=""; syn(); } };
-        window.toggleT = (i) => { d.tasks[i].d = !d.tasks[i].d; syn(); };
-        window.addFC = () => { const q = document.getElementById('fc-q').value, a = document.getElementById('fc-a').value; if(q) { d.fc.push({q, a}); syn(); } };
-        window.moveFC = (dir) => { if(!d.fc.length) return; document.getElementById('fc-card').classList.add('slide-anim'); setTimeout(() => { fcI = (fcI + dir + d.fc.length) % d.fc.length; ren(); document.getElementById('fc-card').classList.remove('slide-anim'); }, 300); };
-        window.startPomo = () => { const m = document.getElementById('p-min').value; if(m) left = m * 60; if(!tmr) tmr = setInterval(() => { if(left > 0) { left--; upP(); } else clearInterval(tmr); }, 1000); };
-        window.pausePomo = () => { clearInterval(tmr); tmr = null; };
-        const upP = () => { const m = Math.floor(left/60), s = left%60; document.getElementById('p-timer').innerText = `${m}:${s<10?'0':''}${s}`; };
-        window.cBtn = (v) => v === 'C' ? document.getElementById('c-scr').value = "" : document.getElementById('c-scr').value += v;
-        window.solve = () => { try { document.getElementById('c-scr').value = eval(document.getElementById('c-scr').value); } catch { alert("Error"); } };
-        window.saveSet = () => { const n = document.getElementById('name-in').value; if(n) d.name = n; syn(); };
-        const ren = () => {
-            document.getElementById('welcome').innerText = `Hi, ${d.name}!`;
-            document.getElementById('side-name').innerText = d.name;
-            document.getElementById('streak-val').innerText = d.streak;
-            document.getElementById('task-stat').innerText = d.tasks.filter(t => !t.d).length;
-            document.getElementById('fc-stat').innerText = d.fc.length;
-            const tl = document.getElementById('t-list'); tl.innerHTML = "";
-            d.tasks.forEach((t, i) => { tl.innerHTML += `<div class="t-item" onclick="toggleT(${i})" style="${t.d?'opacity:0.5;text-decoration:line-through':''}">${t.t}</div>`; });
-            if(d.fc[fcI]) { document.getElementById('fc-f').innerText = d.fc[fcI].q; document.getElementById('fc-b').innerText = d.fc[fcI].a; document.getElementById('fc-page').innerText = `${fcI+1}/${d.fc.length}`; }
-        };
-        document.getElementById('login-google').onclick = () => signInWithPopup(auth, prov);
-        document.getElementById('logout').onclick = () => signOut(auth).then(() => location.reload());
-    </script>
+<div id="auth-gate" style="position:fixed; inset:0; background:white; z-index:2000; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
+    <h1 style="font-size:3.5rem; margin:0;">⚡ StudyOS</h1>
+    <p style="color:#64748b; margin-bottom:40px;">Professional Workspace by Girish</p>
+    <button class="btn-p" id="login-google" style="max-width:300px;">Sign in with Google</button>
+    <button onclick="closeAuth()" style="margin-top:20px; background:none; border:none; color:var(--p); font-weight:700; cursor:pointer;">Enter as Guest</button>
+</div>
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+<div id="sidebar">
+    <h2 id="side-username" style="margin-bottom:5px;">Scholar</h2>
+    <p id="side-email" style="font-size:0.8rem; color:#64748b; margin-top:0;">guest@studyos.com</p>
+    <hr style="border:0; border-top:1px solid var(--border); margin:20px 0;">
+    <div onclick="openPage('dash')" style="padding:12px 0; cursor:pointer; font-weight:600;">🏠 Dashboard</div>
+    <div onclick="openPage('flash')" style="padding:12px 0; cursor:pointer; font-weight:600;">📚 Flashcards</div>
+    <div onclick="openPage('pomo')" style="padding:12px 0; cursor:pointer; font-weight:600;">⏱️ Pomodoro Timer</div>
+    <div onclick="openPage('calc')" style="padding:12px 0; cursor:pointer; font-weight:600;">🔢 Calculator</div>
+    <div onclick="openPage('settings')" style="padding:12px 0; cursor:pointer; font-weight:600;">⚙️ Settings</div>
+    
+    <div style="margin-top:auto;">
+        <button class="btn-p" style="background:#334155;" onclick="toggleDarkMode()">🌗 Night Mode</button>
+        <button class="btn-p" style="margin-top:10px; background:#fee2e2; color:#ef4444;" id="logout-btn">Logout</button>
+    </div>
+</div>
+<header style="padding: 12px 20px; background: var(--card); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000;">
+    <div style="display:flex; align-items:center; gap:15px;">
+        <button onclick="toggleMenu()" id="menu-btn" style="background:none; border:none; font-size:1.5rem; color:var(--text); cursor:pointer;">☰</button>
+        <div style="font-weight:800; font-size:1.4rem;">StudyOS</div>
+    </div>
+    <div id="head-pfp" class="pfp-circle" style="width:40px; height:40px; border-radius:12px; background:var(--p); color:white; display:flex; align-items:center; justify-content:center; font-weight:800; cursor:pointer; overflow:hidden;" onclick="openPage('settings')">S</div>
+</header>
+<main class="container">
+    <div id="dash" class="section active">
+        <h2 id="welcome-msg" style="margin-bottom:20px;">Hi, User!</h2>
+        
+        <div class="grid-stats">
+            <div class="stat-box streak-big">
+                <span style="font-size:0.9rem; font-weight:700; color:#b45309;">STREAK</span>
+                <p style="font-size:2.2rem; margin:5px 0; font-weight:800;">🔥 <span id="streak-val">0</span></p>
+                <span style="font-size:0.7rem; color:#64748b;">Days Active</span>
+            </div>
+            <div class="stat-box">
+                <span style="font-size:0.9rem; font-weight:700;">TASKS</span>
+                <p style="font-size:1.8rem; margin:5px 0; font-weight:800;">✅ <span id="task-stat">0</span></p>
+            </div>
+            <div class="stat-box">
+                <span style="font-size:0.9rem; font-weight:700;">CARDS</span>
+                <p style="font-size:1.8rem; margin:5px 0; font-weight:800;">📖 <span id="fc-stat">0</span></p>
+            </div>
+        </div>
+        <div class="main-card">
+            <h3 style="margin-top:0;">Focus To-Do</h3>
+            <div style="display:flex; gap:10px; margin-bottom:20px;">
+                <input type="text" id="t-input" placeholder="What's the plan?" style="flex:1; padding:15px; border-radius:15px; border:1px solid var(--border); background:var(--bg); color:var(--text);">
+                <button class="btn-p" onclick="addTask()" style="width:60px;">+</button>
+            </div>
+            <div id="t-list"></div>
+        </div>
+    </div>
+    <div id="flash" class="section">
+        <div class="scene" onclick="document.getElementById('fc-card').classList.toggle('is-flipped')">
+            <div class="card-3d" id="fc-card">
+                <div class="card-face" id="fc-front">No cards in library</div>
+                <div class="card-face card-back" id="fc-back">Tap + to add one</div>
+            </div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+            <button class="btn-p" style="width:70px; background:var(--card); color:var(--text); border:1px solid var(--border)" onclick="moveFC(-1)">◀</button>
+            <div id="fc-page" style="font-weight:800; font-size:1.1rem;">0 / 0</div>
+            <button class="btn-p" style="width:70px; background:var(--card); color:var(--text); border:1px solid var(--border)" onclick="moveFC(1)">▶</button>
+        </div>
+        <div class="main-card">
+            <h3>New Flashcard</h3>
+            <input type="text" id="fc-q" placeholder="Front Question" style="width:100%; padding:14px; margin-bottom:12px; border-radius:12px; border:1px solid var(--border);">
+            <input type="text" id="fc-a" placeholder="Back Answer" style="width:100%; padding:14px; margin-bottom:12px; border-radius:12px; border:1px solid var(--border);">
+            <input type="file" id="fc-img" accept="image/*" style="margin-bottom:15px;">
+            <button class="btn-p" onclick="addFC()">Add to Collection</button>
+            <button class="btn-p" style="margin-top:10px; background:#fee2e2; color:#ef4444;" onclick="deleteFC()">Delete Current Card</button>
+        </div>
+    </div>
+    <div id="pomo" class="section">
+        <div class="main-card" style="text-align:center;">
+            <h2>Focus Timer</h2>
+            <div class="pomo-display" id="timer-display">25:00</div>
+            <div style="display:flex; gap:10px; max-width:300px; margin:0 auto 20px;">
+                <input type="number" id="pomo-mins" placeholder="Mins" style="flex:1; padding:12px; border-radius:12px; border:1px solid var(--border); text-align:center;">
+                <button class="btn-p" onclick="setPomo()" style="width:80px;">Set</button>
+            </div>
+            <div style="display:flex; gap:15px;">
+                <button class="btn-p" onclick="startTimer()">Start Session</button>
+                <button class="btn-p" style="background:#64748b" onclick="pauseTimer()">Pause</button>
+            </div>
+        </div>
+    </div>
+    <div id="calc" class="section">
+        <div class="main-card">
+            <input type="text" id="calc-screen" readonly style="width:100%; padding:25px; font-size:2rem; text-align:right; border-radius:20px; border:none; background:var(--bg); color:var(--text); margin-bottom:20px;">
+            <div class="calc-grid">
+                <button class="calc-btn" onclick="clearCalc()">C</button>
+                <button class="calc-btn" onclick="pressCalc('(')">(</button>
+                <button class="calc-btn" onclick="pressCalc(')')">)</button>
+                <button class="calc-btn" onclick="pressCalc('/')">÷</button>
+                <button class="calc-btn" onclick="pressCalc('7')">7</button>
+                <button class="calc-btn" onclick="pressCalc('8')">8</button>
+                <button class="calc-btn" onclick="pressCalc('9')">9</button>
+                <button class="calc-btn" onclick="pressCalc('*')">×</button>
+                <button class="calc-btn" onclick="pressCalc('4')">4</button>
+                <button class="calc-btn" onclick="pressCalc('5')">5</button>
+                <button class="calc-btn" onclick="pressCalc('6')">6</button>
+                <button class="calc-btn" onclick="pressCalc('-')">−</button>
+                <button class="calc-btn" onclick="pressCalc('1')">1</button>
+                <button class="calc-btn" onclick="pressCalc('2')">2</button>
+                <button class="calc-btn" onclick="pressCalc('3')">3</button>
+                <button class="calc-btn" onclick="pressCalc('+')">+</button>
+                <button class="calc-btn" onclick="pressCalc('0')">0</button>
+                <button class="calc-btn" onclick="pressCalc('.')">.</button>
+                <button class="calc-btn" style="grid-column: span 2; background:var(--p); color:white;" onclick="solveCalc()">=</button>
+            </div>
+        </div>
+    </div>
+    <div id="settings" class="section">
+        <div class="main-card">
+            <h3>Settings</h3>
+            <p>Display Name:</p>
+            <input type="text" id="name-change" placeholder="Girish" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); margin-bottom:20px;">
+            <p>Profile Picture (Upload):</p>
+            <input type="file" accept="image/*" onchange="uploadPFP(event)" style="margin-bottom:20px;">
+            <button class="btn-p" onclick="saveProfile()">Update Profile</button>
+        </div>
+    </div>
+</main>
+<script type="module">
+    // REPLACE THESE STRINGS WITH YOUR ACTUAL KEYS 
+    // OR USE window.FIREBASE_CONFIG if using an external config.js
+    const firebaseConfig = {
+        apiKey: "AIzaSyA6fVzFz2IdjYsCt8TK_nGPwqbxrQ8hM3s",
+        authDomain: "studyos-a8e51.firebaseapp.com",
+        projectId: "studyos-a8e51",
+        storageBucket: "studyos-a8e51.firebasestorage.app",
+        messagingSenderId: "174218643372",
+        appId: "1:174218643372:web:9cbd8066f745ba4171dc09"
+    };
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const prov = new GoogleAuthProvider();
+    let data = { tasks: [], flashcards: [], streak: 0, lastLogin: null, pfp: "", name: "Girish" };
+    let uid = null, fcIdx = 0, timerObj = null, timeLeft = 1500;
+    onAuthStateChanged(auth, async (u) => {
+        if(u) {
+            uid = u.uid;
+            const snap = await getDoc(doc(db, "users", uid));
+            if(snap.exists()) {
+                data = snap.data();
+                handleStreak();
+            } else {
+                data.name = u.displayName || "Girish";
+                data.pfp = u.photoURL;
+                data.streak = 1;
+                data.lastLogin = new Date().toISOString();
+            }
+            document.getElementById('auth-gate').style.display = 'none';
+            sync();
+        }
+    });
+    function handleStreak() {
+        const today = new Date().toDateString();
+        const last = data.lastLogin ? new Date(data.lastLogin).toDateString() : null;
+        if (last !== today) {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            if (last === yesterday.toDateString()) {
+                data.streak += 1;
+            } else {
+                data.streak = 1; // Missed a day
+            }
+            data.lastLogin = new Date().toISOString();
+        }
+    }
+    const sync = async () => { if(uid) await setDoc(doc(db, "users", uid), data); render(); };
+    // --- NAVIGATION ---
+    window.toggleMenu = () => {
+        const s = document.getElementById('sidebar');
+        s.classList.toggle('open');
+        document.getElementById('overlay').style.display = s.classList.contains('open') ? 'block' : 'none';
+    };
+    window.openPage = (p) => {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(p).classList.add('active');
+        if(window.innerWidth < 992) toggleMenu();
+    };
+    window.toggleDarkMode = () => document.body.classList.toggle('dark')
+        // --- TASKS (REMAINING TASK FIX) ---
+    window.addTask = () => {
+        const v = document.getElementById('t-input').value;
+        if(v) { data.tasks.push({text: v, done: false}); document.getElementById('t-input').value = ""; sync(); }
+    };
+    window.toggleTask = (i) => { data.tasks[i].done = !data.tasks[i].done; sync(); };
+    window.deleteTask = (i) => { data.tasks.splice(i, 1); sync(); };
+    // --- FLASHCARDS (3D ANIMATION) ---
+    window.addFC = () => {
+        const q = document.getElementById('fc-q').value, a = document.getElementById('fc-a').value, img = document.getElementById('fc-img').files[0];
+        if(!q) return;
+        const save = (b64 = "") => { data.flashcards.push({q, a, img: b64}); sync(); };
+        if(img) { const r = new FileReader(); r.onloadend = () => save(r.result); r.readAsDataURL(img); }
+        else save();
+    };
+    window.moveFC = (d) => {
+        if(!data.flashcards.length) return;
+        const cardEl = document.getElementById('fc-card');
+        cardEl.classList.add('slide-out');
+        setTimeout(() => {
+            fcIdx = (fcIdx + d + data.flashcards.length) % data.flashcards.length;
+            render();
+            cardEl.classList.remove('slide-out');
+        }, 300);
+    };
+    window.deleteFC = () => { data.flashcards.splice(fcIdx, 1); fcIdx = 0; sync(); };
+    // --- POMODORO ---
+    window.setPomo = () => {
+        const m = document.getElementById('pomo-mins').value;
+        if(m) { timeLeft = m * 60; updateTimerUI(); }
+    };
+    window.startTimer = () => {
+        if(timerObj) return;
+        timerObj = setInterval(() => {
+            if(timeLeft > 0) { timeLeft--; updateTimerUI(); }
+            else { clearInterval(timerObj); alert("Focus session complete!"); }
+        }, 1000);
+    };
+    window.pauseTimer = () => { clearInterval(timerObj); timerObj = null; };
+    function updateTimerUI() {
+        const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+        document.getElementById('timer-display').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+    // --- CALCULATOR ---
+    window.pressCalc = (v) => document.getElementById('calc-screen').value += v;
+    window.clearCalc = () => document.getElementById('calc-screen').value = "";
+    window.solveCalc = () => {
+        try { document.getElementById('calc-screen').value = eval(document.getElementById('calc-screen').value); }
+        catch { alert("Error"); }
+    };
+    // --- PROFILE ---
+    window.saveProfile = () => {
+        const n = document.getElementById('name-change').value;
+        if(n) data.name = n;
+        sync();
+    };
+    window.uploadPFP = (e) => {
+        const r = new FileReader();
+        r.onloadend = () => { data.pfp = r.result; sync(); };
+        if(e.target.files[0]) r.readAsDataURL(e.target.files[0]);
+    };
+    document.getElementById('login-google').onclick = () => signInWithPopup(auth, prov);
+    document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
+    window.closeAuth = () => document.getElementById('auth-gate').style.display = 'none';
+    function render() {
+        document.getElementById('welcome-msg').textContent = `Hi, ${data.name}!`;
+        document.getElementById('side-username').textContent = data.name;
+        document.getElementById('streak-val').textContent = data.streak || 1;
+        document.getElementById('fc-stat').textContent = data.flashcards.length;
+        
+        // Correct task counter logic (Pending tasks only)
+        const pending = data.tasks.filter(t => !t.done).length;
+        document.getElementById('task-stat').textContent = pending;
+        const pfp = document.getElementById('head-pfp');
+        if(data.pfp) pfp.innerHTML = `<img src="${data.pfp}" style="width:100%;height:100%;object-fit:cover;">`;
+        else pfp.textContent = data.name.charAt(0).toUpperCase();
+        const tl = document.getElementById('t-list'); tl.innerHTML = "";
+        data.tasks.forEach((t, i) => {
+            tl.innerHTML += `<div class="t-item ${t.done?'t-done':''}">
+                <div class="t-check" onclick="toggleTask(${i})" style="${t.done?'background:var(--p)':''}"></div>
+                <span style="flex:1">${t.text}</span>
+                <span onclick="deleteTask(${i})" style="color:var(--accent); cursor:pointer;">✕</span>
+            </div>`;
+        });
+        if(data.flashcards.length) {
+            const c = data.flashcards[fcIdx];
+            document.getElementById('fc-front').innerHTML = `${c.q} ${c.img ? `<img src="${c.img}" style="max-width:100%; max-height:120px; border-radius:12px; margin-top:10px;">` : ''}`;
+            document.getElementById('fc-back').textContent = c.a;
+            document.getElementById('fc-page').textContent = `${fcIdx + 1} / ${data.flashcards.length}`;
+        }
+    }
+</script>
 </body>
-    </html>
-                                                                                    
+</html>
