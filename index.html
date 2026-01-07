@@ -9,7 +9,7 @@
     <style>
         :root { --p: #6366f1; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --border: #e2e8f0; --accent: #f43f5e; }
         .dark { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --border: #334155; }
-        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.2s; }
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s, color 0.2s; }
         body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 50px; min-height: 100vh; overflow-x: hidden; }
 
         /* SIDEBAR */
@@ -26,20 +26,11 @@
         .streak-big { border: 2px solid #fbbf24; background: linear-gradient(135deg, var(--card), #fffbeb); }
         
         /* PROGRESS BAR */
-        .prog-container { width: 100%; background: var(--border); height: 12px; border-radius: 10px; margin-top: 20px; overflow: hidden; position: relative; }
-        #prog-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #818cf8); width: 0%; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .prog-container { width: 100%; background: var(--border); height: 12px; border-radius: 10px; margin-top: 15px; overflow: hidden; position: relative; }
+        #prog-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #818cf8); width: 0%; transition: 0.5s; }
 
         /* LEADERBOARD */
         .leader-item { display: flex; justify-content: space-between; padding: 12px; border-radius: 12px; background: var(--bg); margin-bottom: 8px; border: 1px solid var(--border); }
-
-        /* 3D FLASHCARDS */
-        .scene { width: 100%; height: 300px; perspective: 1200px; cursor: pointer; margin-bottom: 20px; }
-        .card-3d { width: 100%; height: 100%; position: relative; transition: 0.6s; transform-style: preserve-3d; }
-        .card-3d.flipped { transform: rotateY(180deg); }
-        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 24px; display: flex; align-items: center; justify-content: center; padding: 30px; text-align: center; font-size: 1.4rem; font-weight: 600; border: 2px solid var(--p); background: var(--card); }
-        .card-back { transform: rotateY(180deg); background: var(--p); color: white; border: none; }
-        .slide-anim { animation: slide 0.4s ease; }
-        @keyframes slide { 0% { opacity:0; transform: scale(0.9); } 100% { opacity:1; transform: scale(1); } }
 
         /* UTILS */
         .btn-p { background: var(--p); color: white; border: none; padding: 15px; border-radius: 15px; font-weight: 700; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; }
@@ -56,7 +47,7 @@
 
 <div id="auth-gate" style="position:fixed; inset:0; background:white; z-index:2000; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
     <h1 style="font-size:3rem; margin-bottom:5px;">⚡ StudyOS</h1>
-<p style="margin-bottom:30px; color:#64748b; font-weight:600;">Premium Workspace | Made By Girish</p>
+    <p style="margin-bottom:30px; color:#64748b; font-weight:600;">Premium Workspace | Made By Girish</p>
     <div style="width:100%; max-width:320px; display:flex; flex-direction:column; gap:12px;">
         <button class="btn-p" id="login-google">Continue with Google</button>
         <button class="btn-p" style="background:#64748b;" onclick="closeAuth()">Enter as Guest</button>
@@ -120,42 +111,44 @@
 
         <div class="main-card">
             <h3>Global Leaderboard 🔥</h3>
-            <div id="leader-list">Loading...</div>
-        </div>
-    </div>
-
-    <div id="flash" class="section">
-        <div class="scene" onclick="document.getElementById('fc-card').classList.toggle('flipped')">
-            <div class="card-3d" id="fc-card">
-                <div class="card-face" id="fc-front">No Cards</div>
-                <div class="card-face card-back" id="fc-back">Add one below</div>
-            </div>
-        </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
-            <button class="btn-p" style="width:80px; background:var(--card); color:var(--text); border:1px solid var(--border)" onclick="moveFC(-1)">◀</button>
-            <div id="fc-page" style="font-weight:800;">0 / 0</div>
-            <button class="btn-p" style="width:80px; background:var(--card); color:var(--text); border:1px solid var(--border)" onclick="moveFC(1)">▶</button>
-        </div>
-        <div class="main-card">
-            <h3>Create Flashcard</h3>
-            <input type="text" id="fc-q" placeholder="Front" style="width:100%; padding:14px; margin-bottom:12px; border-radius:12px; border:1px solid var(--border);">
-            <input type="text" id="fc-a" placeholder="Back" style="width:100%; padding:14px; margin-bottom:12px; border-radius:12px; border:1px solid var(--border);">
-            <button class="btn-p" onclick="addFC()">Add Card</button>
+            <div id="leader-list">Loading streaks...</div>
         </div>
     </div>
 
     <div id="pomo" class="section">
         <div class="main-card" style="text-align:center;">
-            <div class="pomo-display" id="timer-display">25:00</div>
+            <h2>Study Timer</h2>
+            <div style="position: relative; width: 220px; height: 220px; margin: 0 auto 20px;">
+                <svg width="220" height="220" style="transform: rotate(-90deg);">
+                    <circle cx="110" cy="110" r="100" stroke="var(--border)" stroke-width="10" fill="transparent" />
+                    <circle id="pomo-ring" cx="110" cy="110" r="100" stroke="var(--p)" stroke-width="10" fill="transparent" 
+                        stroke-dasharray="628" stroke-dashoffset="0" stroke-linecap="round" style="transition: stroke-dashoffset 1s linear;" />
+                </svg>
+                <div id="timer-display" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; font-weight: 800; color: var(--p);">25:00</div>
+            </div>
             <div style="display:flex; gap:10px; max-width:320px; margin:0 auto 20px;">
                 <input type="number" id="pomo-mins" placeholder="Mins" style="flex:1; padding:15px; border-radius:12px; border:1px solid var(--border); text-align:center;">
                 <button class="btn-p" onclick="setPomo()" style="width:100px;">Set</button>
             </div>
-            <div style="display:flex; gap:15px;">
+            <div style="display:flex; gap:15px; margin-bottom: 20px;">
                 <button class="btn-p" onclick="startTimer()">Start</button>
                 <button class="btn-p" style="background:#64748b" onclick="pauseTimer()">Pause</button>
             </div>
+            <div style="border-top: 1px solid var(--border); padding-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div><small style="color:#64748b">STUDIED TODAY</small><div id="daily-time" style="font-weight: 800; font-size:1.2rem;">0m</div></div>
+                <div><small style="color:#64748b">TOTAL STUDY</small><div id="total-time" style="font-weight: 800; font-size:1.2rem;">0m</div></div>
+            </div>
         </div>
+    </div>
+
+    <div id="flash" class="section">
+        <div class="scene" style="width:100%; height:300px; perspective:1200px; cursor:pointer; margin-bottom:20px;" onclick="document.getElementById('fc-card').classList.toggle('flipped')">
+            <div class="card-3d" id="fc-card" style="width:100%; height:100%; position:relative; transition:0.6s; transform-style:preserve-3d;">
+                <div class="card-face" id="fc-front" style="position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:24px; display:flex; align-items:center; justify-content:center; padding:30px; text-align:center; font-size:1.4rem; font-weight:600; border:2px solid var(--p); background:var(--card);">No Cards</div>
+                <div class="card-face card-back" id="fc-back" style="position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:24px; display:flex; align-items:center; justify-content:center; padding:30px; text-align:center; font-size:1.4rem; font-weight:600; transform:rotateY(180deg); background:var(--p); color:white;">Add one below</div>
+            </div>
+        </div>
+        <button class="btn-p" onclick="addFC()">Add Card</button>
     </div>
 
     <div id="calc" class="section">
@@ -195,8 +188,8 @@
     import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app), prov = new GoogleAuthProvider();
-    let data = { tasks: [], flashcards: [], streak: 1, lastLogin: null, name: "Scholar", darkMode: false };
-    let uid = null, fcIdx = 0, timerObj = null, timeLeft = 1500;
+    let data = { tasks: [], flashcards: [], streak: 1, lastLogin: null, name: "Scholar", darkMode: false, dailyStudyTime: 0, totalStudyTime: 0 };
+    let uid = null, fcIdx = 0, timerObj = null, timeLeft = 1500, initialTime = 1500;
 
     onAuthStateChanged(auth, async (u) => {
         if(u) {
@@ -217,6 +210,7 @@
             const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
             data.streak = (last === yesterday.toDateString()) ? data.streak + 1 : 1;
             data.lastLogin = new Date().toISOString();
+            data.dailyStudyTime = 0; // Reset daily counter on new day
         }
     }
 
@@ -226,10 +220,7 @@
         const q = query(collection(db, "users"), orderBy("streak", "desc"), limit(5));
         const snap = await getDocs(q);
         const list = document.getElementById('leader-list'); list.innerHTML = "";
-        snap.forEach((doc) => {
-            const u = doc.data();
-            list.innerHTML += `<div class="leader-item"><span>${u.name}</span><strong>🔥 ${u.streak}</strong></div>`;
-        });
+        snap.forEach((doc) => { const u = doc.data(); list.innerHTML += `<div class="leader-item"><span>${u.name}</span><strong>🔥 ${u.streak}</strong></div>`; });
     }
 
     window.toggleDarkMode = () => { data.darkMode = !data.darkMode; applyTheme(); sync(); };
@@ -239,36 +230,42 @@
         else { document.body.classList.remove('dark'); if(btn) btn.innerText = "🌗 Night Mode"; }
     }
 
-    window.addTask = () => {
-        const v = document.getElementById('t-input').value;
-        if(v) { data.tasks.push({text: v, done: false}); document.getElementById('t-input').value = ""; sync(); }
-    };
-    window.toggleTask = (i) => {
-        data.tasks[i].done = !data.tasks[i].done;
-        if(data.tasks[i].done) confetti({ particleCount: 80, spread: 60, origin: { y: 0.8 } });
-        sync();
-    };
+    window.addTask = () => { const v = document.getElementById('t-input').value; if(v) { data.tasks.push({text: v, done: false}); document.getElementById('t-input').value = ""; sync(); } };
+    window.toggleTask = (i) => { data.tasks[i].done = !data.tasks[i].done; if(data.tasks[i].done) confetti({ particleCount: 80, spread: 60, origin: { y: 0.8 } }); sync(); };
     window.deleteTask = (i) => { data.tasks.splice(i, 1); sync(); };
 
     window.toggleMenu = () => { const s = document.getElementById('sidebar'); s.classList.toggle('open'); document.getElementById('overlay').style.display = s.classList.contains('open') ? 'block' : 'none'; };
     window.openPage = (p) => { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.getElementById(p).classList.add('active'); if(window.innerWidth < 992) toggleMenu(); };
 
-    window.addFC = () => { const q = document.getElementById('fc-q').value, a = document.getElementById('fc-a').value; if(q && a) { data.flashcards.push({q, a}); sync(); } };
-    window.moveFC = (dir) => {
-        if(!data.flashcards.length) return;
-        document.getElementById('fc-card').classList.add('slide-anim');
-        setTimeout(() => { fcIdx = (fcIdx + dir + data.flashcards.length) % data.flashcards.length; render(); document.getElementById('fc-card').classList.remove('slide-anim'); }, 300);
+    // POMODORO CLOCK LOGIC
+    window.setPomo = () => { const m = document.getElementById('pomo-mins').value; if(m) { timeLeft = m * 60; initialTime = timeLeft; upTime(); } };
+    window.startTimer = () => { 
+        if(timerObj) return; 
+        timerObj = setInterval(() => { 
+            if(timeLeft > 0) { 
+                timeLeft--; 
+                data.dailyStudyTime += (1/60); 
+                data.totalStudyTime += (1/60); 
+                upTime(); 
+            } else { 
+                clearInterval(timerObj); timerObj = null; 
+                confetti({ particleCount: 150 }); alert("Break time!"); sync(); 
+            } 
+        }, 1000); 
     };
-
-    window.setPomo = () => { const m = document.getElementById('pomo-mins').value; if(m) { timeLeft = m * 60; upTime(); } };
-    window.startTimer = () => { if(timerObj) return; timerObj = setInterval(() => { if(timeLeft > 0) { timeLeft--; upTime(); } else { clearInterval(timerObj); alert("Break time!"); } }, 1000); };
-    window.pauseTimer = () => { clearInterval(timerObj); timerObj = null; };
-    function upTime() { const m = Math.floor(timeLeft/60), s = timeLeft%60; document.getElementById('timer-display').innerText = `${m}:${s<10?'0':''}${s}`; }
+    window.pauseTimer = () => { clearInterval(timerObj); timerObj = null; sync(); };
+    function upTime() { 
+        const m = Math.floor(timeLeft/60), s = timeLeft%60; 
+        document.getElementById('timer-display').innerText = `${m}:${s<10?'0':''}${s}`; 
+        const ring = document.getElementById('pomo-ring');
+        ring.style.strokeDashoffset = 628 - (628 * (timeLeft / initialTime));
+        document.getElementById('daily-time').innerText = Math.floor(data.dailyStudyTime) + "m";
+        document.getElementById('total-time').innerText = Math.floor(data.totalStudyTime) + "m";
+    }
 
     window.pressCalc = (v) => document.getElementById('calc-screen').value += v;
     window.clearCalc = () => document.getElementById('calc-screen').value = "";
     window.solveCalc = () => { try { document.getElementById('calc-screen').value = eval(document.getElementById('calc-screen').value); } catch { alert("Error"); } };
-
     window.saveProfile = () => { const n = document.getElementById('name-change').value; if(n) data.name = n; sync(); };
     window.closeAuth = () => document.getElementById('auth-gate').style.display = 'none';
 
@@ -278,6 +275,8 @@
         document.getElementById('streak-val').innerText = data.streak;
         document.getElementById('task-stat').innerText = data.tasks.filter(t => !t.done).length;
         document.getElementById('fc-stat').innerText = data.flashcards.length;
+        document.getElementById('daily-time').innerText = Math.floor(data.dailyStudyTime) + "m";
+        document.getElementById('total-time').innerText = Math.floor(data.totalStudyTime) + "m";
 
         const tl = document.getElementById('t-list'); tl.innerHTML = "";
         data.tasks.forEach((t, i) => {
@@ -290,21 +289,14 @@
         const total = data.tasks.length;
         if(total > 0) {
             document.getElementById('prog-wrapper').style.display = 'block';
-            const done = data.tasks.filter(t => t.done).length;
-            const pct = Math.round((done / total) * 100);
+            const pct = Math.round((data.tasks.filter(t => t.done).length / total) * 100);
             document.getElementById('prog-fill').style.width = pct + '%';
             document.getElementById('prog-percent').innerText = pct + '%';
         } else { document.getElementById('prog-wrapper').style.display = 'none'; }
-
-        if(data.flashcards[fcIdx]) {
-            document.getElementById('fc-front').innerText = data.flashcards[fcIdx].q;
-            document.getElementById('fc-back').innerText = data.flashcards[fcIdx].a;
-            document.getElementById('fc-page').innerText = `${fcIdx + 1} / ${data.flashcards.length}`;
-        }
     }
 
     document.getElementById('login-google').onclick = () => signInWithPopup(auth, prov);
     document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
 </script>
 </body>
-                    </html>
+</html>
