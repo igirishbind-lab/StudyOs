@@ -12,49 +12,50 @@
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s, color 0.2s; }
         body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 50px; min-height: 100vh; overflow-x: hidden; }
 
+        /* AUTH PAGE STYLES */
+        #auth-gate { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+        .auth-card { background: var(--card); padding: 30px; border-radius: 24px; border: 1px solid var(--border); width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .auth-input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }
+
         /* SIDEBAR */
         #sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--card); border-right: 1px solid var(--border); z-index: 1500; padding: 25px; display: flex; flex-direction: column; }
         #sidebar.open { left: 0; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; z-index: 1400; backdrop-filter: blur(4px); }
         @media (min-width: 992px) { body { padding-left: 280px; } #sidebar { left: 0 !important; } #menu-btn { display: none !important; } }
 
-        /* UI ELEMENTS */
+        /* COMMON UI */
         .container { max-width: 1000px; margin: auto; padding: 20px; }
-        .main-card { background: var(--card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .main-card { background: var(--card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); margin-bottom: 20px; }
         .grid-stats { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .stat-box { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid var(--border); text-align: center; }
-        .streak-big { border: 2px solid #fbbf24; background: linear-gradient(135deg, var(--card), #fffbeb); }
+        .btn-p { background: var(--p); color: white; border: none; padding: 15px; border-radius: 15px; font-weight: 700; cursor: pointer; width: 100%; margin-bottom: 10px; }
         
-        /* PROGRESS */
-        .prog-container { width: 100%; background: var(--border); height: 12px; border-radius: 10px; margin-top: 15px; overflow: hidden; }
-        #prog-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #818cf8); width: 0%; transition: 0.5s; }
-
-        /* FLASHCARDS 3D */
-        .scene { width: 100%; height: 300px; perspective: 1200px; cursor: pointer; margin-bottom: 20px; }
+        /* 3D FLASHCARDS */
+        .scene { width: 100%; height: 250px; perspective: 1000px; cursor: pointer; margin-bottom: 20px; }
         .card-3d { width: 100%; height: 100%; position: relative; transition: 0.6s; transform-style: preserve-3d; }
         .card-3d.flipped { transform: rotateY(180deg); }
-        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 24px; display: flex; align-items: center; justify-content: center; padding: 30px; text-align: center; font-size: 1.4rem; font-weight: 600; border: 2px solid var(--p); background: var(--card); }
-        .card-back { transform: rotateY(180deg); background: var(--p); color: white; border: none; }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; display: flex; align-items: center; justify-content: center; padding: 20px; font-size: 1.2rem; font-weight: 600; border: 2px solid var(--p); background: var(--card); }
+        .card-back { transform: rotateY(180deg); background: var(--p); color: white; }
 
-        /* CALC */
-        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .calc-btn { padding: 18px; border-radius: 14px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-weight: 700; cursor: pointer; }
-
-        .btn-p { background: var(--p); color: white; border: none; padding: 15px; border-radius: 15px; font-weight: 700; cursor: pointer; width: 100%; }
-        .t-item { display: flex; align-items: center; padding: 15px; background: var(--bg); border-radius: 15px; margin-bottom: 12px; border: 1px solid var(--border); }
-        .t-check { width: 24px; height: 24px; border-radius: 6px; border: 2px solid var(--p); margin-right: 15px; cursor: pointer; }
-        
         .section { display: none; }
         .section.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .leader-item { display: flex; justify-content: space-between; padding: 10px; background: var(--bg); border-radius: 10px; margin-bottom: 5px; }
     </style>
 </head>
 <body class="light">
 
-<div id="auth-gate" style="position:fixed; inset:0; background:white; z-index:2000; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-    <h1>⚡ StudyOS</h1>
-    <button class="btn-p" id="login-google" style="max-width:280px">Continue with Google</button>
+<div id="auth-gate">
+    <div class="auth-card">
+        <h1 style="margin-bottom: 5px;">⚡ StudyOS</h1>
+        <p style="color: var(--p); font-weight: 700; margin-bottom: 25px;">Made By Girish</p>
+        
+        <input type="text" id="email-input" class="auth-input" placeholder="Email or Phone">
+        <input type="password" id="pass-input" class="auth-input" placeholder="Password">
+        
+        <button class="btn-p" id="login-email">Login with Email/Phone</button>
+        <button class="btn-p" id="login-google" style="background: #db4437;">Login with Google</button>
+        <button class="btn-p" onclick="closeAuth()" style="background: #64748b;">Continue as Guest</button>
+    </div>
 </div>
 
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
@@ -67,13 +68,13 @@
     <div onclick="openPage('settings')" style="padding:15px 0; cursor:pointer;">⚙️ Settings</div>
     <div style="margin-top:auto;">
         <button class="btn-p" onclick="toggleDarkMode()" style="background:#334155;">🌗 Night Mode</button>
-        <button class="btn-p" id="logout-btn" style="background:#fee2e2; color:#ef4444; margin-top:10px;">Logout</button>
+        <button class="btn-p" id="logout-btn" style="background:#fee2e2; color:#ef4444;">Logout</button>
     </div>
 </div>
 
 <header style="padding: 12px 20px; background: var(--card); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top:0; z-index:1000;">
     <button onclick="toggleMenu()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--text);">☰</button>
-    <div style="font-weight:800; font-size:1.2rem;">StudyOS</div>
+    <div style="font-weight:800;">StudyOS</div>
     <div onclick="openPage('settings')" style="width:35px; height:35px; background:var(--p); border-radius:10px; cursor:pointer;"></div>
 </header>
 
@@ -81,38 +82,24 @@
     <div id="dash" class="section active">
         <h2 id="welcome-msg">Hi, Scholar!</h2>
         <div class="grid-stats">
-            <div class="stat-box streak-big"><span>STREAK</span><p>🔥 <span id="streak-val">0</span></p></div>
+            <div class="stat-box" style="border: 2px solid #fbbf24;"><span>STREAK</span><p>🔥 <span id="streak-val">0</span></p></div>
             <div class="stat-box"><span>TASKS</span><p>✅ <span id="task-stat">0</span></p></div>
             <div class="stat-box"><span>CARDS</span><p>📖 <span id="fc-stat">0</span></p></div>
         </div>
         <div class="main-card">
             <h3>Focus To-Do</h3>
-            <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <div style="display:flex; gap:10px;">
                 <input type="text" id="t-input" placeholder="New goal..." style="flex:1; padding:12px; border-radius:12px; border:1px solid var(--border); background:var(--bg); color:var(--text);">
                 <button class="btn-p" onclick="addTask()" style="width:60px;">+</button>
             </div>
-            <div id="t-list"></div>
-            <div id="prog-wrapper" style="display:none; margin-top:15px;">
-                <div style="display:flex; justify-content:space-between;"><small>Progress</small><small id="prog-percent">0%</small></div>
-                <div class="prog-container"><div id="prog-fill"></div></div>
-            </div>
-        </div>
-        <div class="main-card">
-            <h3>Leaderboard</h3>
-            <div id="leader-list">Loading...</div>
+            <div id="t-list" style="margin-top:15px;"></div>
         </div>
     </div>
 
     <div id="pomo" class="section">
         <div class="main-card" style="text-align:center;">
-            <h2>Timer</h2>
-            <div style="position: relative; width: 200px; height: 200px; margin: 0 auto 20px;">
-                <svg width="200" height="200" style="transform: rotate(-90deg);">
-                    <circle cx="100" cy="100" r="90" stroke="var(--border)" stroke-width="8" fill="transparent" />
-                    <circle id="pomo-ring" cx="100" cy="100" r="90" stroke="var(--p)" stroke-width="8" fill="transparent" stroke-dasharray="565" stroke-dashoffset="0" />
-                </svg>
-                <div id="timer-display" style="position: absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:2.5rem; font-weight:800;">25:00</div>
-            </div>
+            <h2>Study Timer</h2>
+            <h1 id="timer-display" style="font-size:4rem; margin:20px 0;">25:00</h1>
             <div style="display:flex; gap:10px; margin-bottom:20px;">
                 <input type="number" id="pomo-mins" placeholder="Mins" style="flex:1; padding:12px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text);">
                 <button class="btn-p" onclick="setPomo()">Set</button>
@@ -141,30 +128,30 @@
             <button class="btn-p" style="width:60px;" onclick="moveFC(1)">▶</button>
         </div>
         <div class="main-card">
-            <input type="text" id="fc-q" placeholder="Question" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text);">
-            <input type="text" id="fc-a" placeholder="Answer" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text);">
+            <input type="text" id="fc-q" placeholder="Question" class="auth-input">
+            <input type="text" id="fc-a" placeholder="Answer" class="auth-input">
             <button class="btn-p" onclick="addFC()">Add Card</button>
         </div>
     </div>
 
     <div id="calc" class="section">
         <div class="main-card">
-            <input type="text" id="calc-screen" readonly style="width:100%; padding:20px; font-size:1.5rem; text-align:right; margin-bottom:15px; border:none; background:var(--bg); color:var(--text); border-radius:10px;">
-            <div class="calc-grid">
-                <button class="calc-btn" onclick="clearCalc()">C</button><button class="calc-btn" onclick="pressCalc('(')">(</button><button class="calc-btn" onclick="pressCalc(')')">)</button><button class="calc-btn" onclick="pressCalc('/')">/</button>
-                <button class="calc-btn" onclick="pressCalc('7')">7</button><button class="calc-btn" onclick="pressCalc('8')">8</button><button class="calc-btn" onclick="pressCalc('9')">9</button><button class="calc-btn" onclick="pressCalc('*')">×</button>
-                <button class="calc-btn" onclick="pressCalc('4')">4</button><button class="calc-btn" onclick="pressCalc('5')">5</button><button class="calc-btn" onclick="pressCalc('6')">6</button><button class="calc-btn" onclick="pressCalc('-')">-</button>
-                <button class="calc-btn" onclick="pressCalc('1')">1</button><button class="calc-btn" onclick="pressCalc('2')">2</button><button class="calc-btn" onclick="pressCalc('3')">3</button><button class="calc-btn" onclick="pressCalc('+')">+</button>
-                <button class="calc-btn" onclick="pressCalc('0')">0</button><button class="calc-btn" onclick="pressCalc('.')">.</button><button class="calc-btn" style="grid-column: span 2; background:var(--p); color:white;" onclick="solveCalc()">=</button>
-            </div>
+            <input type="text" id="calc-screen" readonly style="width:100%; padding:20px; font-size:1.5rem; text-align:right; margin-bottom:15px; background:var(--bg); color:var(--text); border:none; border-radius:10px;">
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px;">
+                <button onclick="pressCalc('7')" class="btn-p" style="background:var(--card); color:var(--text); border:1px solid var(--border)">7</button>
+                <button onclick="pressCalc('8')" class="btn-p" style="background:var(--card); color:var(--text); border:1px solid var(--border)">8</button>
+                <button onclick="pressCalc('9')" class="btn-p" style="background:var(--card); color:var(--text); border:1px solid var(--border)">9</button>
+                <button onclick="pressCalc('/')" class="btn-p" style="background:var(--p)">/</button>
+                </div>
+            <button class="btn-p" onclick="solveCalc()" style="margin-top:10px;">Calculate</button>
         </div>
     </div>
 
     <div id="settings" class="section">
         <div class="main-card">
-            <h3>Profile Settings</h3>
-            <input type="text" id="name-change" placeholder="Edit Name" style="width:100%; padding:12px; margin-bottom:15px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text);">
-            <button class="btn-p" onclick="saveProfile()">Update Profile</button>
+            <h3>Update Profile</h3>
+            <input type="text" id="name-change" placeholder="New Name" class="auth-input">
+            <button class="btn-p" onclick="saveProfile()">Save Name</button>
         </div>
     </div>
 </main>
@@ -180,12 +167,12 @@
     };
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app), prov = new GoogleAuthProvider();
-    let data = { tasks: [], flashcards: [], streak: 1, lastLogin: null, name: "Scholar", darkMode: false, dailyStudyTime: 0, totalStudyTime: 0 };
-    let uid = null, timerObj = null, timeLeft = 1500, initialTime = 1500, secondsEarned = 0, fcIdx = 0;
+    let data = { tasks: [], flashcards: [], streak: 1, name: "Scholar", darkMode: false, dailyStudyTime: 0, totalStudyTime: 0 };
+    let uid = null, timerObj = null, timeLeft = 1500, secondsEarned = 0, fcIdx = 0;
 
     onAuthStateChanged(auth, async (u) => {
         if(u) {
@@ -193,19 +180,27 @@
             const snap = await getDoc(doc(db, "users", uid));
             if(snap.exists()) data = snap.data();
             document.getElementById('auth-gate').style.display = 'none';
-            applyTheme(); render(); loadLeaderboard();
+            applyTheme(); render();
         }
     });
 
     const sync = async () => { if(uid) await setDoc(doc(db, "users", uid), data); render(); };
 
+    // AUTH ACTIONS
+    document.getElementById('login-google').onclick = () => signInWithPopup(auth, prov);
+    document.getElementById('login-email').onclick = async () => {
+        const e = document.getElementById('email-input').value;
+        const p = document.getElementById('pass-input').value;
+        try { await signInWithEmailAndPassword(auth, e, p); } catch(err) { alert(err.message); }
+    };
+    window.closeAuth = () => document.getElementById('auth-gate').style.display = 'none';
+
     // TIMER
-    window.setPomo = () => { const m = document.getElementById('pomo-mins').value; if(m) { timeLeft = m*60; initialTime = timeLeft; upUI(); } };
     window.startTimer = () => {
         if(timerObj) return;
         secondsEarned = 0;
         timerObj = setInterval(() => {
-            if(timeLeft > 0) { timeLeft--; secondsEarned++; upUI(); }
+            if(timeLeft > 0) { timeLeft--; secondsEarned++; updateDisplay(); }
             else { clearInterval(timerObj); timerObj = null; saveTime(); confetti(); }
         }, 1000);
     };
@@ -217,33 +212,15 @@
             secondsEarned = 0; sync();
         }
     }
-    function upUI() {
+    function updateDisplay() {
         const m = Math.floor(timeLeft/60), s = timeLeft%60;
         document.getElementById('timer-display').innerText = `${m}:${s<10?'0':''}${s}`;
-        document.getElementById('pomo-ring').style.strokeDashoffset = 565 - (565 * (timeLeft/initialTime));
     }
 
-    // FLASHCARDS
-    window.addFC = () => {
-        const q = document.getElementById('fc-q').value, a = document.getElementById('fc-a').value;
-        if(q && a) { data.flashcards.push({q,a}); sync(); }
-    };
-    window.moveFC = (dir) => {
-        if(!data.flashcards.length) return;
-        fcIdx = (fcIdx + dir + data.flashcards.length) % data.flashcards.length;
-        render();
-    };
-
-    // CALC
-    window.pressCalc = (v) => document.getElementById('calc-screen').value += v;
-    window.clearCalc = () => document.getElementById('calc-screen').value = "";
-    window.solveCalc = () => { try { document.getElementById('calc-screen').value = eval(document.getElementById('calc-screen').value); } catch { alert("Error"); } };
-
-    // CORE
+    // CORE UI
     window.toggleDarkMode = () => { data.darkMode = !data.darkMode; applyTheme(); sync(); };
     function applyTheme() {
-        if(data.darkMode) document.body.classList.add('dark');
-        else document.body.classList.remove('dark');
+        document.body.className = data.darkMode ? 'dark' : 'light';
     }
     window.openPage = (p) => {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -260,54 +237,20 @@
     };
     window.toggleTask = (i) => {
         data.tasks[i].done = !data.tasks[i].done;
-        if(data.tasks[i].done) confetti({ particleCount: 80, spread: 60 });
+        if(data.tasks[i].done) confetti();
         sync();
     };
-    window.saveProfile = () => { const n = document.getElementById('name-change').value; if(n) data.name = n; sync(); };
-
-    async function loadLeaderboard() {
-        const q = query(collection(db, "users"), orderBy("streak", "desc"), limit(5));
-        const snap = await getDocs(q);
-        const list = document.getElementById('leader-list'); list.innerHTML = "";
-        snap.forEach(d => {
-            const u = d.data();
-            list.innerHTML += `<div class="leader-item"><span>${u.name}</span><strong>🔥 ${u.streak}</strong></div>`;
-        });
-    }
 
     function render() {
         document.getElementById('welcome-msg').innerText = `Hi, ${data.name}!`;
-        document.getElementById('side-username').innerText = data.name;
-        document.getElementById('streak-val').innerText = data.streak;
         document.getElementById('daily-time').innerText = Math.round(data.dailyStudyTime) + "m";
         document.getElementById('total-time').innerText = Math.round(data.totalStudyTime) + "m";
-        
         const tl = document.getElementById('t-list'); tl.innerHTML = "";
         data.tasks.forEach((t, i) => {
-            tl.innerHTML += `<div class="t-item" onclick="toggleTask(${i})">
-                <div class="t-check" style="${t.done?'background:var(--p)':''}"></div>
-                <span style="${t.done?'text-decoration:line-through;opacity:0.5':''}">${t.text}</span>
-            </div>`;
+            tl.innerHTML += `<div class="t-item" onclick="toggleTask(${i})"><div class="t-check" style="${t.done?'background:var(--p)':''}"></div><span>${t.text}</span></div>`;
         });
-
-        const total = data.tasks.length;
-        if(total > 0) {
-            document.getElementById('prog-wrapper').style.display = 'block';
-            const pct = Math.round((data.tasks.filter(t => t.done).length / total) * 100);
-            document.getElementById('prog-fill').style.width = pct + '%';
-            document.getElementById('prog-percent').innerText = pct + '%';
-            document.getElementById('task-stat').innerText = total - data.tasks.filter(t => t.done).length;
-        }
-
-        if(data.flashcards[fcIdx]) {
-            document.getElementById('fc-front').innerText = data.flashcards[fcIdx].q;
-            document.getElementById('fc-back').innerText = data.flashcards[fcIdx].a;
-            document.getElementById('fc-page').innerText = `${fcIdx + 1} / ${data.flashcards.length}`;
-            document.getElementById('fc-stat').innerText = data.flashcards.length;
-        }
     }
 
-    document.getElementById('login-google').onclick = () => signInWithPopup(auth, prov);
     document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
 </script>
 </body>
