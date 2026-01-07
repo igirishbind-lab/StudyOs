@@ -12,24 +12,20 @@
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s, color 0.2s; }
         body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 50px; min-height: 100vh; overflow-x: hidden; }
 
-        /* SIDEBAR */
         #sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--card); border-right: 1px solid var(--border); z-index: 1500; padding: 25px; display: flex; flex-direction: column; }
         #sidebar.open { left: 0; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; z-index: 1400; backdrop-filter: blur(4px); }
         @media (min-width: 992px) { body { padding-left: 280px; } #sidebar { left: 0 !important; } #menu-btn { display: none !important; } }
 
-        /* UI CARDS */
         .container { max-width: 1000px; margin: auto; padding: 20px; }
         .main-card { background: var(--card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .grid-stats { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .stat-box { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid var(--border); text-align: center; }
         .streak-big { border: 2px solid #fbbf24; background: linear-gradient(135deg, var(--card), #fffbeb); }
         
-        /* PROGRESS BAR */
         .prog-container { width: 100%; background: var(--border); height: 12px; border-radius: 10px; margin-top: 15px; overflow: hidden; position: relative; }
         #prog-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #818cf8); width: 0%; transition: 0.5s; }
 
-        /* FLASHCARDS 3D */
         .scene { width: 100%; height: 300px; perspective: 1200px; cursor: pointer; margin-bottom: 20px; }
         .card-3d { width: 100%; height: 100%; position: relative; transition: 0.6s; transform-style: preserve-3d; }
         .card-3d.flipped { transform: rotateY(180deg); }
@@ -38,7 +34,6 @@
         .slide-anim { animation: slide 0.4s ease; }
         @keyframes slide { 0% { opacity:0; transform: scale(0.9); } 100% { opacity:1; transform: scale(1); } }
 
-        /* UTILS */
         .btn-p { background: var(--p); color: white; border: none; padding: 15px; border-radius: 15px; font-weight: 700; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .t-item { display: flex; align-items: center; padding: 15px; background: var(--bg); border-radius: 15px; margin-bottom: 12px; border: 1px solid var(--border); }
         .t-check { width: 26px; height: 26px; border-radius: 8px; border: 2.5px solid var(--p); margin-right: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
@@ -47,6 +42,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .calc-btn { padding: 18px; border-radius: 14px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-weight: 700; cursor: pointer; }
+        .leader-item { display: flex; justify-content: space-between; padding: 12px; border-radius: 12px; background: var(--bg); margin-bottom: 8px; border: 1px solid var(--border); }
     </style>
 </head>
 <body class="light">
@@ -253,13 +249,22 @@
     window.toggleMenu = () => { const s = document.getElementById('sidebar'); s.classList.toggle('open'); document.getElementById('overlay').style.display = s.classList.contains('open') ? 'block' : 'none'; };
     window.openPage = (p) => { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.getElementById(p).classList.add('active'); if(window.innerWidth < 992) toggleMenu(); };
 
-    // POMODORO LOGIC
+    // POMODORO LOGIC WITH PERSISTENCE FIX
     window.setPomo = () => { const m = document.getElementById('pomo-mins').value; if(m) { timeLeft = m * 60; initialTime = timeLeft; upTime(); } };
     window.startTimer = () => { 
         if(timerObj) return; 
         timerObj = setInterval(() => { 
-            if(timeLeft > 0) { timeLeft--; data.dailyStudyTime += (1/60); data.totalStudyTime += (1/60); upTime(); } 
-            else { clearInterval(timerObj); timerObj = null; confetti({ particleCount: 150 }); alert("Break time!"); sync(); } 
+            if(timeLeft > 0) { 
+                timeLeft--; 
+                data.dailyStudyTime += (1/60); 
+                data.totalStudyTime += (1/60); 
+                upTime(); 
+                // Auto-save every 10 seconds while running
+                if (timeLeft % 10 === 0) sync();
+            } else { 
+                clearInterval(timerObj); timerObj = null; 
+                confetti({ particleCount: 150 }); alert("Break time!"); sync(); 
+            } 
         }, 1000); 
     };
     window.pauseTimer = () => { clearInterval(timerObj); timerObj = null; sync(); };
@@ -271,7 +276,7 @@
         document.getElementById('total-time').innerText = Math.floor(data.totalStudyTime) + "m";
     }
 
-    // FLASHCARD LOGIC (FIXED)
+    // FLASHCARD LOGIC
     window.addFC = () => {
         const q = document.getElementById('fc-q').value, a = document.getElementById('fc-a').value;
         if(q && a) { data.flashcards.push({q, a}); document.getElementById('fc-q').value = ""; document.getElementById('fc-a').value = ""; sync(); }
@@ -322,12 +327,11 @@
             document.getElementById('fc-front').innerText = data.flashcards[fcIdx].q;
             document.getElementById('fc-back').innerText = data.flashcards[fcIdx].a;
             document.getElementById('fc-page').innerText = `${fcIdx + 1} / ${data.flashcards.length}`;
-        } else {
-            document.getElementById('fc-front').innerText = "No Cards";
-            document.getElementById('fc-back').innerText = "Add one below";
-            document.getElementById('fc-page').innerText = "0 / 0";
         }
     }
+
+    // Emergency save on tab close
+    window.addEventListener('beforeunload', () => { if(uid) setDoc(doc(db, "users", uid), data); });
 
     document.getElementById('login-google').onclick = () => signInWithPopup(auth, prov);
     document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
