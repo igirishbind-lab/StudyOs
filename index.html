@@ -29,8 +29,14 @@
         .prog-container { width: 100%; background: var(--border); height: 12px; border-radius: 10px; margin-top: 15px; overflow: hidden; position: relative; }
         #prog-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #818cf8); width: 0%; transition: 0.5s; }
 
-        /* LEADERBOARD */
-        .leader-item { display: flex; justify-content: space-between; padding: 12px; border-radius: 12px; background: var(--bg); margin-bottom: 8px; border: 1px solid var(--border); }
+        /* FLASHCARDS 3D */
+        .scene { width: 100%; height: 300px; perspective: 1200px; cursor: pointer; margin-bottom: 20px; }
+        .card-3d { width: 100%; height: 100%; position: relative; transition: 0.6s; transform-style: preserve-3d; }
+        .card-3d.flipped { transform: rotateY(180deg); }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 24px; display: flex; align-items: center; justify-content: center; padding: 30px; text-align: center; font-size: 1.4rem; font-weight: 600; border: 2px solid var(--p); background: var(--card); }
+        .card-back { transform: rotateY(180deg); background: var(--p); color: white; border: none; }
+        .slide-anim { animation: slide 0.4s ease; }
+        @keyframes slide { 0% { opacity:0; transform: scale(0.9); } 100% { opacity:1; transform: scale(1); } }
 
         /* UTILS */
         .btn-p { background: var(--p); color: white; border: none; padding: 15px; border-radius: 15px; font-weight: 700; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; }
@@ -142,13 +148,23 @@
     </div>
 
     <div id="flash" class="section">
-        <div class="scene" style="width:100%; height:300px; perspective:1200px; cursor:pointer; margin-bottom:20px;" onclick="document.getElementById('fc-card').classList.toggle('flipped')">
-            <div class="card-3d" id="fc-card" style="width:100%; height:100%; position:relative; transition:0.6s; transform-style:preserve-3d;">
-                <div class="card-face" id="fc-front" style="position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:24px; display:flex; align-items:center; justify-content:center; padding:30px; text-align:center; font-size:1.4rem; font-weight:600; border:2px solid var(--p); background:var(--card);">No Cards</div>
-                <div class="card-face card-back" id="fc-back" style="position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:24px; display:flex; align-items:center; justify-content:center; padding:30px; text-align:center; font-size:1.4rem; font-weight:600; transform:rotateY(180deg); background:var(--p); color:white;">Add one below</div>
+        <div class="scene" onclick="document.getElementById('fc-card').classList.toggle('flipped')">
+            <div class="card-3d" id="fc-card">
+                <div class="card-face" id="fc-front">No Cards</div>
+                <div class="card-face card-back" id="fc-back">Add one below</div>
             </div>
         </div>
-        <button class="btn-p" onclick="addFC()">Add Card</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+            <button class="btn-p" style="width:80px; background:var(--card); color:var(--text); border:1px solid var(--border)" onclick="moveFC(-1)">◀</button>
+            <div id="fc-page" style="font-weight:800;">0 / 0</div>
+            <button class="btn-p" style="width:80px; background:var(--card); color:var(--text); border:1px solid var(--border)" onclick="moveFC(1)">▶</button>
+        </div>
+        <div class="main-card">
+            <h3>Create Flashcard</h3>
+            <input type="text" id="fc-q" placeholder="Front" style="width:100%; padding:14px; margin-bottom:12px; border-radius:12px; border:1px solid var(--border);">
+            <input type="text" id="fc-a" placeholder="Back" style="width:100%; padding:14px; margin-bottom:12px; border-radius:12px; border:1px solid var(--border);">
+            <button class="btn-p" onclick="addFC()">Add Card</button>
+        </div>
     </div>
 
     <div id="calc" class="section">
@@ -210,7 +226,7 @@
             const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
             data.streak = (last === yesterday.toDateString()) ? data.streak + 1 : 1;
             data.lastLogin = new Date().toISOString();
-            data.dailyStudyTime = 0; // Reset daily counter on new day
+            data.dailyStudyTime = 0;
         }
     }
 
@@ -237,31 +253,39 @@
     window.toggleMenu = () => { const s = document.getElementById('sidebar'); s.classList.toggle('open'); document.getElementById('overlay').style.display = s.classList.contains('open') ? 'block' : 'none'; };
     window.openPage = (p) => { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.getElementById(p).classList.add('active'); if(window.innerWidth < 992) toggleMenu(); };
 
-    // POMODORO CLOCK LOGIC
+    // POMODORO LOGIC
     window.setPomo = () => { const m = document.getElementById('pomo-mins').value; if(m) { timeLeft = m * 60; initialTime = timeLeft; upTime(); } };
     window.startTimer = () => { 
         if(timerObj) return; 
         timerObj = setInterval(() => { 
-            if(timeLeft > 0) { 
-                timeLeft--; 
-                data.dailyStudyTime += (1/60); 
-                data.totalStudyTime += (1/60); 
-                upTime(); 
-            } else { 
-                clearInterval(timerObj); timerObj = null; 
-                confetti({ particleCount: 150 }); alert("Break time!"); sync(); 
-            } 
+            if(timeLeft > 0) { timeLeft--; data.dailyStudyTime += (1/60); data.totalStudyTime += (1/60); upTime(); } 
+            else { clearInterval(timerObj); timerObj = null; confetti({ particleCount: 150 }); alert("Break time!"); sync(); } 
         }, 1000); 
     };
     window.pauseTimer = () => { clearInterval(timerObj); timerObj = null; sync(); };
     function upTime() { 
         const m = Math.floor(timeLeft/60), s = timeLeft%60; 
         document.getElementById('timer-display').innerText = `${m}:${s<10?'0':''}${s}`; 
-        const ring = document.getElementById('pomo-ring');
-        ring.style.strokeDashoffset = 628 - (628 * (timeLeft / initialTime));
+        document.getElementById('pomo-ring').style.strokeDashoffset = 628 - (628 * (timeLeft / initialTime));
         document.getElementById('daily-time').innerText = Math.floor(data.dailyStudyTime) + "m";
         document.getElementById('total-time').innerText = Math.floor(data.totalStudyTime) + "m";
     }
+
+    // FLASHCARD LOGIC (FIXED)
+    window.addFC = () => {
+        const q = document.getElementById('fc-q').value, a = document.getElementById('fc-a').value;
+        if(q && a) { data.flashcards.push({q, a}); document.getElementById('fc-q').value = ""; document.getElementById('fc-a').value = ""; sync(); }
+    };
+    window.moveFC = (dir) => {
+        if(!data.flashcards.length) return;
+        document.getElementById('fc-card').classList.add('slide-anim');
+        setTimeout(() => {
+            fcIdx = (fcIdx + dir + data.flashcards.length) % data.flashcards.length;
+            render();
+            document.getElementById('fc-card').classList.remove('slide-anim');
+            document.getElementById('fc-card').classList.remove('flipped');
+        }, 300);
+    };
 
     window.pressCalc = (v) => document.getElementById('calc-screen').value += v;
     window.clearCalc = () => document.getElementById('calc-screen').value = "";
@@ -293,6 +317,16 @@
             document.getElementById('prog-fill').style.width = pct + '%';
             document.getElementById('prog-percent').innerText = pct + '%';
         } else { document.getElementById('prog-wrapper').style.display = 'none'; }
+
+        if(data.flashcards[fcIdx]) {
+            document.getElementById('fc-front').innerText = data.flashcards[fcIdx].q;
+            document.getElementById('fc-back').innerText = data.flashcards[fcIdx].a;
+            document.getElementById('fc-page').innerText = `${fcIdx + 1} / ${data.flashcards.length}`;
+        } else {
+            document.getElementById('fc-front').innerText = "No Cards";
+            document.getElementById('fc-back').innerText = "Add one below";
+            document.getElementById('fc-page').innerText = "0 / 0";
+        }
     }
 
     document.getElementById('login-google').onclick = () => signInWithPopup(auth, prov);
