@@ -12,7 +12,7 @@
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.3s, color 0.3s; }
         body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 50px; min-height: 100vh; overflow-x: hidden; }
 
-        /* SIDEBAR & NAV */
+        /* SIDEBAR */
         #sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--card); border-right: 1px solid var(--border); z-index: 1500; padding: 25px; transition: 0.3s; display: flex; flex-direction: column; }
         #sidebar.open { left: 0; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; z-index: 1400; backdrop-filter: blur(4px); }
@@ -23,66 +23,66 @@
             #menu-btn { display: none !important; }
         }
 
-        /* DASHBOARD & STREAK */
+        /* STATS */
         .container { max-width: 1000px; margin: auto; padding: 20px; }
-        .main-card { background: var(--card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .main-card { background: var(--card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         
         .grid-stats { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .stat-box { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid var(--border); text-align: center; display: flex; flex-direction: column; justify-content: center; }
         .streak-big { border: 2px solid #fbbf24; background: linear-gradient(135deg, var(--card), #fffbeb); }
         .dark .streak-big { background: linear-gradient(135deg, var(--card), #451a03); }
 
-        /* FLASHCARD 3D TRANSITION */
+        /* FLASHCARD 3D */
         .scene { width: 100%; height: 300px; perspective: 1200px; cursor: pointer; margin-bottom: 20px; }
         .card-3d { width: 100%; height: 100%; position: relative; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
-        .card-3d.is-flipped { transform: rotateY(180deg); }
+        .card-3d.flipped { transform: rotateY(180deg); }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; font-size: 1.4rem; font-weight: 600; border: 2px solid var(--p); background: var(--card); }
+        .card-back { transform: rotateY(180deg); background: var(--p); color: white; border: none; }
         
-        /* The specific 3D "Slide & Flip" animation for next/prev */
-        .slide-out { animation: slideOut 0.5s forwards; }
-        @keyframes slideOut { 
-            0% { transform: translateZ(0) rotateY(0); opacity: 1; }
-            50% { transform: translateZ(-200px) rotateY(90deg); opacity: 0.5; }
-            100% { transform: translateZ(0) rotateY(0); opacity: 1; }
+        .slide-anim { animation: slide3D 0.5s ease; }
+        @keyframes slide3D {
+            0% { transform: scale(1) translateX(0); opacity: 1; }
+            50% { transform: scale(0.8) translateX(100px) rotateY(20deg); opacity: 0; }
+            100% { transform: scale(1) translateX(0); opacity: 1; }
         }
 
-        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 24px; border: 2px solid var(--p); background: var(--card); padding: 30px; text-align: center; font-size: 1.3rem; font-weight: 600; }
-        .card-back { transform: rotateY(180deg); background: var(--p); color: white; border: none; }
-
-        /* POMODORO & CALC */
-        .pomo-display { width: 200px; height: 200px; border-radius: 50%; border: 10px solid var(--p); display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 800; margin: 20px auto; color: var(--p); position: relative; }
-        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .calc-btn { padding: 20px; border-radius: 15px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-weight: 700; cursor: pointer; font-size: 1.1rem; }
+        /* TOOLS */
+        .pomo-display { width: 220px; height: 220px; border-radius: 50%; border: 10px solid var(--p); display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: 800; margin: 20px auto; color: var(--p); }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .calc-btn { padding: 20px; border-radius: 16px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-weight: 700; cursor: pointer; font-size: 1.2rem; }
         .calc-btn:hover { background: var(--p); color: white; }
 
-        /* TASK UI */
+        /* UI ELEMENTS */
+        .btn-p { background: var(--p); color: white; border: none; padding: 15px; border-radius: 15px; font-weight: 700; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .t-item { display: flex; align-items: center; padding: 15px; background: var(--bg); border-radius: 15px; margin-bottom: 12px; border: 1px solid var(--border); }
-        .t-check { width: 24px; height: 24px; border-radius: 8px; border: 2.5px solid var(--p); margin-right: 15px; cursor: pointer; transition: 0.2s; }
-        .t-done { opacity: 0.5; text-decoration: line-through; }
-        
-        .btn-p { background: var(--p); color: white; border: none; padding: 15px; border-radius: 15px; font-weight: 700; cursor: pointer; width: 100%; }
-        .section { display: none; }
+        .t-check { width: 24px; height: 24px; border-radius: 8px; border: 2.5px solid var(--p); margin-right: 15px; cursor: pointer; }
+        .section { display: none; animation: fadeIn 0.4s ease; }
         .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="light">
 
 <div id="auth-gate" style="position:fixed; inset:0; background:white; z-index:2000; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
-    <h1 style="font-size:3.5rem; margin:0;">⚡ StudyOS</h1>
-    <p style="color:#64748b; margin-bottom:40px;">Professional Workspace by Girish</p>
-    <button class="btn-p" id="login-google" style="max-width:300px;">Sign in with Google</button>
-    <button onclick="closeAuth()" style="margin-top:20px; background:none; border:none; color:var(--p); font-weight:700; cursor:pointer;">Enter as Guest</button>
+    <h1 style="font-size:3rem; margin-bottom:10px;">⚡ StudyOS</h1>
+    <p style="margin-bottom:30px; color:#64748b;">Premium Workspace by Girish</p>
+    <div style="width:100%; max-width:320px; display:flex; flex-direction:column; gap:12px;">
+        <button class="btn-p" id="login-google">Continue with Google</button>
+        <button class="btn-p" style="background:#1e293b;" onclick="alert('Email login coming soon! Use Google for now.')">Email & Password</button>
+        <button class="btn-p" style="background:#64748b;" onclick="closeAuth()">Enter as Guest</button>
+    </div>
 </div>
 
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 <div id="sidebar">
     <h2 id="side-username" style="margin-bottom:5px;">Scholar</h2>
-    <p id="side-email" style="font-size:0.8rem; color:#64748b; margin-top:0;">guest@studyos.com</p>
+    <p id="side-email" style="font-size:0.8rem; color:#64748b; margin-top:0;">Premium Member</p>
     <hr style="border:0; border-top:1px solid var(--border); margin:20px 0;">
-    <div onclick="openPage('dash')" style="padding:12px 0; cursor:pointer; font-weight:600;">🏠 Dashboard</div>
-    <div onclick="openPage('flash')" style="padding:12px 0; cursor:pointer; font-weight:600;">📚 Flashcards</div>
-    <div onclick="openPage('pomo')" style="padding:12px 0; cursor:pointer; font-weight:600;">⏱️ Pomodoro Timer</div>
-    <div onclick="openPage('calc')" style="padding:12px 0; cursor:pointer; font-weight:600;">🔢 Calculator</div>
-    <div onclick="openPage('settings')" style="padding:12px 0; cursor:pointer; font-weight:600;">⚙️ Settings</div>
+    <div onclick="openPage('dash')" style="padding:15px 0; cursor:pointer; font-weight:600;">🏠 Dashboard</div>
+    <div onclick="openPage('flash')" style="padding:15px 0; cursor:pointer; font-weight:600;">📚 Flashcards</div>
+    <div onclick="openPage('pomo')" style="padding:15px 0; cursor:pointer; font-weight:600;">⏱️ Pomodoro Timer</div>
+    <div onclick="openPage('calc')" style="padding:15px 0; cursor:pointer; font-weight:600;">🔢 Calculator</div>
+    <div onclick="openPage('settings')" style="padding:15px 0; cursor:pointer; font-weight:600;">⚙️ Settings</div>
     
     <div style="margin-top:auto;">
         <button class="btn-p" style="background:#334155;" onclick="toggleDarkMode()">🌗 Night Mode</button>
@@ -95,33 +95,30 @@
         <button onclick="toggleMenu()" id="menu-btn" style="background:none; border:none; font-size:1.5rem; color:var(--text); cursor:pointer;">☰</button>
         <div style="font-weight:800; font-size:1.4rem;">StudyOS</div>
     </div>
-    <div id="head-pfp" class="pfp-circle" style="width:40px; height:40px; border-radius:12px; background:var(--p); color:white; display:flex; align-items:center; justify-content:center; font-weight:800; cursor:pointer; overflow:hidden;" onclick="openPage('settings')">S</div>
+    <div id="head-pfp" style="width:42px; height:42px; border-radius:12px; background:var(--p); color:white; display:flex; align-items:center; justify-content:center; font-weight:800; cursor:pointer; overflow:hidden;" onclick="openPage('settings')">S</div>
 </header>
 
 <main class="container">
     <div id="dash" class="section active">
-        <h2 id="welcome-msg" style="margin-bottom:20px;">Hi, User!</h2>
-        
+        <h2 id="welcome-msg">Hi, Scholar!</h2>
         <div class="grid-stats">
             <div class="stat-box streak-big">
-                <span style="font-size:0.9rem; font-weight:700; color:#b45309;">STREAK</span>
-                <p style="font-size:2.2rem; margin:5px 0; font-weight:800;">🔥 <span id="streak-val">0</span></p>
-                <span style="font-size:0.7rem; color:#64748b;">Days Active</span>
+                <span style="font-weight:700; color:#b45309;">STREAK</span>
+                <p style="font-size:2.5rem; margin:5px 0; font-weight:800;">🔥 <span id="streak-val">1</span></p>
             </div>
             <div class="stat-box">
-                <span style="font-size:0.9rem; font-weight:700;">TASKS</span>
+                <span style="font-weight:700;">PENDING</span>
                 <p style="font-size:1.8rem; margin:5px 0; font-weight:800;">✅ <span id="task-stat">0</span></p>
             </div>
             <div class="stat-box">
-                <span style="font-size:0.9rem; font-weight:700;">CARDS</span>
+                <span style="font-weight:700;">CARDS</span>
                 <p style="font-size:1.8rem; margin:5px 0; font-weight:800;">📖 <span id="fc-stat">0</span></p>
             </div>
         </div>
-
         <div class="main-card">
-            <h3 style="margin-top:0;">Focus To-Do</h3>
+            <h3>Focus To-Do</h3>
             <div style="display:flex; gap:10px; margin-bottom:20px;">
-                <input type="text" id="t-input" placeholder="What's the plan?" style="flex:1; padding:15px; border-radius:15px; border:1px solid var(--border); background:var(--bg); color:var(--text);">
+                <input type="text" id="t-input" placeholder="Add a new goal..." style="flex:1; padding:15px; border-radius:15px; border:1px solid var(--border); background:var(--bg); color:var(--text);">
                 <button class="btn-p" onclick="addTask()" style="width:60px;">+</button>
             </div>
             <div id="t-list"></div>
@@ -129,37 +126,36 @@
     </div>
 
     <div id="flash" class="section">
-        <div class="scene" onclick="document.getElementById('fc-card').classList.toggle('is-flipped')">
+        <div class="scene" onclick="document.getElementById('fc-card').classList.toggle('flipped')">
             <div class="card-3d" id="fc-card">
-                <div class="card-face" id="fc-front">No cards in library</div>
-                <div class="card-face card-back" id="fc-back">Tap + to add one</div>
+                <div class="card-face" id="fc-front">Empty Library</div>
+                <div class="card-face card-back" id="fc-back">Add a card below</div>
             </div>
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
-            <button class="btn-p" style="width:70px; background:var(--card); color:var(--text); border:1px solid var(--border)" onclick="moveFC(-1)">◀</button>
-            <div id="fc-page" style="font-weight:800; font-size:1.1rem;">0 / 0</div>
-            <button class="btn-p" style="width:70px; background:var(--card); color:var(--text); border:1px solid var(--border)" onclick="moveFC(1)">▶</button>
+            <button class="btn-p" style="width:80px; background:var(--card); color:var(--text); border:1px solid var(--border)" onclick="moveFC(-1)">◀</button>
+            <div id="fc-page" style="font-weight:800;">0 / 0</div>
+            <button class="btn-p" style="width:80px; background:var(--card); color:var(--text); border:1px solid var(--border)" onclick="moveFC(1)">▶</button>
         </div>
         <div class="main-card">
-            <h3>New Flashcard</h3>
-            <input type="text" id="fc-q" placeholder="Front Question" style="width:100%; padding:14px; margin-bottom:12px; border-radius:12px; border:1px solid var(--border);">
-            <input type="text" id="fc-a" placeholder="Back Answer" style="width:100%; padding:14px; margin-bottom:12px; border-radius:12px; border:1px solid var(--border);">
+            <h3>Add Flashcard</h3>
+            <input type="text" id="fc-q" placeholder="Front Side" style="width:100%; padding:14px; margin-bottom:12px; border-radius:12px; border:1px solid var(--border);">
+            <input type="text" id="fc-a" placeholder="Back Side" style="width:100%; padding:14px; margin-bottom:12px; border-radius:12px; border:1px solid var(--border);">
             <input type="file" id="fc-img" accept="image/*" style="margin-bottom:15px;">
             <button class="btn-p" onclick="addFC()">Add to Collection</button>
-            <button class="btn-p" style="margin-top:10px; background:#fee2e2; color:#ef4444;" onclick="deleteFC()">Delete Current Card</button>
         </div>
     </div>
 
     <div id="pomo" class="section">
         <div class="main-card" style="text-align:center;">
-            <h2>Focus Timer</h2>
+            <h2>Focus Session</h2>
             <div class="pomo-display" id="timer-display">25:00</div>
-            <div style="display:flex; gap:10px; max-width:300px; margin:0 auto 20px;">
-                <input type="number" id="pomo-mins" placeholder="Mins" style="flex:1; padding:12px; border-radius:12px; border:1px solid var(--border); text-align:center;">
-                <button class="btn-p" onclick="setPomo()" style="width:80px;">Set</button>
+            <div style="display:flex; gap:10px; max-width:320px; margin:0 auto 20px;">
+                <input type="number" id="pomo-mins" placeholder="Mins" style="flex:1; padding:15px; border-radius:12px; border:1px solid var(--border); text-align:center;">
+                <button class="btn-p" onclick="setPomo()" style="width:100px;">Set</button>
             </div>
             <div style="display:flex; gap:15px;">
-                <button class="btn-p" onclick="startTimer()">Start Session</button>
+                <button class="btn-p" onclick="startTimer()">Start</button>
                 <button class="btn-p" style="background:#64748b" onclick="pauseTimer()">Pause</button>
             </div>
         </div>
@@ -194,19 +190,18 @@
 
     <div id="settings" class="section">
         <div class="main-card">
-            <h3>Settings</h3>
+            <h3>Profile Settings</h3>
             <p>Display Name:</p>
             <input type="text" id="name-change" placeholder="Girish" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); margin-bottom:20px;">
-            <p>Profile Picture (Upload):</p>
+            <p>Change Photo:</p>
             <input type="file" accept="image/*" onchange="uploadPFP(event)" style="margin-bottom:20px;">
-            <button class="btn-p" onclick="saveProfile()">Update Profile</button>
+            <button class="btn-p" onclick="saveProfile()">Save Changes</button>
         </div>
     </div>
 </main>
 
 <script type="module">
-    // REPLACE THESE STRINGS WITH YOUR ACTUAL KEYS 
-    // OR USE window.FIREBASE_CONFIG if using an external config.js
+    // FIREBASE INTEGRATION
     const firebaseConfig = {
         apiKey: "AIzaSyA6fVzFz2IdjYsCt8TK_nGPwqbxrQ8hM3s",
         authDomain: "studyos-a8e51.firebaseapp.com",
@@ -225,7 +220,7 @@
     const db = getFirestore(app);
     const prov = new GoogleAuthProvider();
 
-    let data = { tasks: [], flashcards: [], streak: 0, lastLogin: null, pfp: "", name: "Girish" };
+    let data = { tasks: [], flashcards: [], streak: 1, lastLogin: null, pfp: "", name: "Scholar" };
     let uid = null, fcIdx = 0, timerObj = null, timeLeft = 1500;
 
     onAuthStateChanged(auth, async (u) => {
@@ -236,9 +231,8 @@
                 data = snap.data();
                 handleStreak();
             } else {
-                data.name = u.displayName || "Girish";
+                data.name = u.displayName || "Scholar";
                 data.pfp = u.photoURL;
-                data.streak = 1;
                 data.lastLogin = new Date().toISOString();
             }
             document.getElementById('auth-gate').style.display = 'none';
@@ -249,23 +243,17 @@
     function handleStreak() {
         const today = new Date().toDateString();
         const last = data.lastLogin ? new Date(data.lastLogin).toDateString() : null;
-
         if (last !== today) {
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            
-            if (last === yesterday.toDateString()) {
-                data.streak += 1;
-            } else {
-                data.streak = 1; // Missed a day
-            }
+            const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+            if (last === yesterday.toDateString()) data.streak += 1;
+            else data.streak = 1;
             data.lastLogin = new Date().toISOString();
         }
     }
 
     const sync = async () => { if(uid) await setDoc(doc(db, "users", uid), data); render(); };
 
-    // --- NAVIGATION ---
+    // NAVIGATION
     window.toggleMenu = () => {
         const s = document.getElementById('sidebar');
         s.classList.toggle('open');
@@ -276,9 +264,12 @@
         document.getElementById(p).classList.add('active');
         if(window.innerWidth < 992) toggleMenu();
     };
-    window.toggleDarkMode = () => document.body.classList.toggle('dark');
+    window.toggleDarkMode = () => {
+        document.body.classList.toggle('dark');
+        localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    };
 
-    // --- TASKS (REMAINING TASK FIX) ---
+    // TASKS
     window.addTask = () => {
         const v = document.getElementById('t-input').value;
         if(v) { data.tasks.push({text: v, done: false}); document.getElementById('t-input').value = ""; sync(); }
@@ -286,7 +277,7 @@
     window.toggleTask = (i) => { data.tasks[i].done = !data.tasks[i].done; sync(); };
     window.deleteTask = (i) => { data.tasks.splice(i, 1); sync(); };
 
-    // --- FLASHCARDS (3D ANIMATION) ---
+    // FLASHCARDS
     window.addFC = () => {
         const q = document.getElementById('fc-q').value, a = document.getElementById('fc-a').value, img = document.getElementById('fc-img').files[0];
         if(!q) return;
@@ -294,59 +285,45 @@
         if(img) { const r = new FileReader(); r.onloadend = () => save(r.result); r.readAsDataURL(img); }
         else save();
     };
-    window.moveFC = (d) => {
+    window.moveFC = (dir) => {
         if(!data.flashcards.length) return;
-        const cardEl = document.getElementById('fc-card');
-        cardEl.classList.add('slide-out');
+        const el = document.getElementById('fc-card');
+        el.classList.add('slide-anim');
         setTimeout(() => {
-            fcIdx = (fcIdx + d + data.flashcards.length) % data.flashcards.length;
+            fcIdx = (fcIdx + dir + data.flashcards.length) % data.flashcards.length;
             render();
-            cardEl.classList.remove('slide-out');
+            el.classList.remove('slide-anim');
         }, 300);
     };
-    window.deleteFC = () => { data.flashcards.splice(fcIdx, 1); fcIdx = 0; sync(); };
 
-    // --- POMODORO ---
-    window.setPomo = () => {
-        const m = document.getElementById('pomo-mins').value;
-        if(m) { timeLeft = m * 60; updateTimerUI(); }
-    };
-    window.startTimer = () => {
-        if(timerObj) return;
-        timerObj = setInterval(() => {
-            if(timeLeft > 0) { timeLeft--; updateTimerUI(); }
-            else { clearInterval(timerObj); alert("Focus session complete!"); }
-        }, 1000);
-    };
+    // POMODORO
+    window.setPomo = () => { const m = document.getElementById('pomo-mins').value; if(m) { timeLeft = m * 60; updateUI(); } };
+    window.startTimer = () => { if(timerObj) return; timerObj = setInterval(() => { if(timeLeft > 0) { timeLeft--; updateUI(); } else { clearInterval(timerObj); alert("Time's up!"); } }, 1000); };
     window.pauseTimer = () => { clearInterval(timerObj); timerObj = null; };
-    function updateTimerUI() {
-        const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
-        document.getElementById('timer-display').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
-    }
+    function updateUI() { const m = Math.floor(timeLeft/60), s = timeLeft%60; document.getElementById('timer-display').innerText = `${m}:${s<10?'0':''}${s}`; }
 
-    // --- CALCULATOR ---
+    // CALCULATOR
     window.pressCalc = (v) => document.getElementById('calc-screen').value += v;
     window.clearCalc = () => document.getElementById('calc-screen').value = "";
-    window.solveCalc = () => {
-        try { document.getElementById('calc-screen').value = eval(document.getElementById('calc-screen').value); }
-        catch { alert("Error"); }
-    };
+    window.solveCalc = () => { try { document.getElementById('calc-screen').value = eval(document.getElementById('calc-screen').value); } catch { alert("Error"); } };
 
-    // --- PROFILE ---
-    window.saveProfile = () => {
-        const n = document.getElementById('name-change').value;
-        if(n) data.name = n;
-        sync();
-    };
-    window.uploadPFP = (e) => {
-        const r = new FileReader();
-        r.onloadend = () => { data.pfp = r.result; sync(); };
-        if(e.target.files[0]) r.readAsDataURL(e.target.files[0]);
-    };
+    // PROFILE
+    window.saveProfile = () => { const n = document.getElementById('name-change').value; if(n) data.name = n; sync(); };
+    window.uploadPFP = (e) => { const r = new FileReader(); r.onloadend = () => { data.pfp = r.result; sync(); }; if(e.target.files[0]) r.readAsDataURL(e.target.files[0]); };
 
     document.getElementById('login-google').onclick = () => signInWithPopup(auth, prov);
     document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
     window.closeAuth = () => document.getElementById('auth-gate').style.display = 'none';
 
     function render() {
-        document.getElementById(
+        document.getElementById('welcome-msg').innerText = `Hi, ${data.name}!`;
+        document.getElementById('side-username').innerText = data.name;
+        document.getElementById('streak-val').innerText = data.streak || 1;
+        document.getElementById('fc-stat').innerText = data.flashcards.length;
+        document.getElementById('task-stat').innerText = data.tasks.filter(t => !t.done).length;
+
+        const pfp = document.getElementById('head-pfp');
+        if(data.pfp) pfp.innerHTML = `<img src="${data.pfp}" style="width:100%;height:100%;object-fit:cover;">`;
+        else pfp.innerText = data.name.charAt(0).toUpperCase();
+
+        const tl = document.getElementById('t-li
