@@ -42,7 +42,6 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .calc-btn { padding: 18px; border-radius: 14px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-weight: 700; cursor: pointer; }
-        .leader-item { display: flex; justify-content: space-between; padding: 12px; border-radius: 12px; background: var(--bg); margin-bottom: 8px; border: 1px solid var(--border); }
     </style>
 </head>
 <body class="light">
@@ -109,11 +108,6 @@
                 </div>
                 <div class="prog-container"><div id="prog-fill"></div></div>
             </div>
-        </div>
-
-        <div class="main-card">
-            <h3>Global Leaderboard 🔥</h3>
-            <div id="leader-list">Loading streaks...</div>
         </div>
     </div>
 
@@ -208,121 +202,80 @@
             uid = u.uid;
             const snap = await getDoc(doc(db, "users", uid));
             if(snap.exists()) { data = snap.data(); handleStreak(); }
-            else { data.lastLogin = new Date().toISOString(); data.name = u.displayName || "Scholar"; }
             document.getElementById('auth-gate').style.display = 'none';
-            applyTheme();
-            sync();
-            loadLeaderboard();
+            applyTheme(); sync(); render();
         }
     });
 
     function handleStreak() {
         const today = new Date().toDateString(), last = data.lastLogin ? new Date(data.lastLogin).toDateString() : null;
         if (last !== today) {
-            const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
-            data.streak = (last === yesterday.toDateString()) ? data.streak + 1 : 1;
+            data.dailyStudyTime = 0; 
             data.lastLogin = new Date().toISOString();
-            data.dailyStudyTime = 0;
         }
     }
 
     const sync = async () => { if(uid) { await setDoc(doc(db, "users", uid), data); render(); } };
 
-    async function loadLeaderboard() {
-        const q = query(collection(db, "users"), orderBy("streak", "desc"), limit(5));
-        const snap = await getDocs(q);
-        const list = document.getElementById('leader-list'); list.innerHTML = "";
-        snap.forEach((doc) => { const u = doc.data(); list.innerHTML += `<div class="leader-item"><span>${u.name}</span><strong>🔥 ${u.streak}</strong></div>`; });
-    }
-
     window.toggleDarkMode = () => { data.darkMode = !data.darkMode; applyTheme(); sync(); };
     function applyTheme() {
-        const btn = document.getElementById('theme-btn');
-        if(data.darkMode) { document.body.classList.add('dark'); if(btn) btn.innerText = "☀️ Day Mode"; }
-        else { document.body.classList.remove('dark'); if(btn) btn.innerText = "🌗 Night Mode"; }
+        if(data.darkMode) document.body.classList.add('dark');
+        else document.body.classList.remove('dark');
     }
-
-    window.addTask = () => { const v = document.getElementById('t-input').value; if(v) { data.tasks.push({text: v, done: false}); document.getElementById('t-input').value = ""; sync(); } };
-    window.toggleTask = (i) => { data.tasks[i].done = !data.tasks[i].done; if(data.tasks[i].done) confetti({ particleCount: 80, spread: 60, origin: { y: 0.8 } }); sync(); };
-    window.deleteTask = (i) => { data.tasks.splice(i, 1); sync(); };
 
     window.toggleMenu = () => { const s = document.getElementById('sidebar'); s.classList.toggle('open'); document.getElementById('overlay').style.display = s.classList.contains('open') ? 'block' : 'none'; };
     window.openPage = (p) => { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.getElementById(p).classList.add('active'); if(window.innerWidth < 992) toggleMenu(); };
 
-    // POMODORO LOGIC WITH PERSISTENCE FIX
+    // --- FIXED TIMER LOGIC ---
     window.setPomo = () => { const m = document.getElementById('pomo-mins').value; if(m) { timeLeft = m * 60; initialTime = timeLeft; upTime(); } };
+    
     window.startTimer = () => { 
         if(timerObj) return; 
+        data.dailyStudyTime = Number(data.dailyStudyTime) || 0;
+        data.totalStudyTime = Number(data.totalStudyTime) || 0;
+
         timerObj = setInterval(() => { 
             if(timeLeft > 0) { 
                 timeLeft--; 
                 data.dailyStudyTime += (1/60); 
                 data.totalStudyTime += (1/60); 
                 upTime(); 
-                // Auto-save every 10 seconds while running
                 if (timeLeft % 10 === 0) sync();
             } else { 
                 clearInterval(timerObj); timerObj = null; 
-                confetti({ particleCount: 150 }); alert("Break time!"); sync(); 
+                sync(); 
+                confetti({ particleCount: 150 }); alert("Session Complete! Break time."); 
             } 
         }, 1000); 
     };
+
     window.pauseTimer = () => { clearInterval(timerObj); timerObj = null; sync(); };
+
     function upTime() { 
         const m = Math.floor(timeLeft/60), s = timeLeft%60; 
         document.getElementById('timer-display').innerText = `${m}:${s<10?'0':''}${s}`; 
         document.getElementById('pomo-ring').style.strokeDashoffset = 628 - (628 * (timeLeft / initialTime));
-        document.getElementById('daily-time').innerText = Math.floor(data.dailyStudyTime) + "m";
-        document.getElementById('total-time').innerText = Math.floor(data.totalStudyTime) + "m";
+        
+        // Show whole minutes using Rounding
+        document.getElementById('daily-time').innerText = Math.round(data.dailyStudyTime || 0) + "m";
+        document.getElementById('total-time').innerText = Math.round(data.totalStudyTime || 0) + "m";
     }
 
-    // FLASHCARD LOGIC
+    // FLASHCARD & UTILS
     window.addFC = () => {
         const q = document.getElementById('fc-q').value, a = document.getElementById('fc-a').value;
-        if(q && a) { data.flashcards.push({q, a}); document.getElementById('fc-q').value = ""; document.getElementById('fc-a').value = ""; sync(); }
+        if(q && a) { data.flashcards.push({q, a}); sync(); }
     };
     window.moveFC = (dir) => {
         if(!data.flashcards.length) return;
-        document.getElementById('fc-card').classList.add('slide-anim');
-        setTimeout(() => {
-            fcIdx = (fcIdx + dir + data.flashcards.length) % data.flashcards.length;
-            render();
-            document.getElementById('fc-card').classList.remove('slide-anim');
-            document.getElementById('fc-card').classList.remove('flipped');
-        }, 300);
+        fcIdx = (fcIdx + dir + data.flashcards.length) % data.flashcards.length;
+        render();
     };
-
-    window.pressCalc = (v) => document.getElementById('calc-screen').value += v;
-    window.clearCalc = () => document.getElementById('calc-screen').value = "";
-    window.solveCalc = () => { try { document.getElementById('calc-screen').value = eval(document.getElementById('calc-screen').value); } catch { alert("Error"); } };
-    window.saveProfile = () => { const n = document.getElementById('name-change').value; if(n) data.name = n; sync(); };
-    window.closeAuth = () => document.getElementById('auth-gate').style.display = 'none';
 
     function render() {
         document.getElementById('welcome-msg').innerText = `Hi, ${data.name}!`;
-        document.getElementById('side-username').innerText = data.name;
-        document.getElementById('streak-val').innerText = data.streak;
-        document.getElementById('task-stat').innerText = data.tasks.filter(t => !t.done).length;
-        document.getElementById('fc-stat').innerText = data.flashcards.length;
-        document.getElementById('daily-time').innerText = Math.floor(data.dailyStudyTime) + "m";
-        document.getElementById('total-time').innerText = Math.floor(data.totalStudyTime) + "m";
-
-        const tl = document.getElementById('t-list'); tl.innerHTML = "";
-        data.tasks.forEach((t, i) => {
-            tl.innerHTML += `<div class="t-item"><div class="t-check" onclick="toggleTask(${i})" style="${t.done?'background:var(--p)':''}">
-                ${t.done ? '<span style="color:white; font-size:12px;">✓</span>' : ''}</div>
-                <span style="flex:1; ${t.done?'text-decoration:line-through; opacity:0.5':''}">${t.text}</span>
-                <span onclick="deleteTask(${i})" style="color:var(--accent); cursor:pointer;">✕</span></div>`;
-        });
-
-        const total = data.tasks.length;
-        if(total > 0) {
-            document.getElementById('prog-wrapper').style.display = 'block';
-            const pct = Math.round((data.tasks.filter(t => t.done).length / total) * 100);
-            document.getElementById('prog-fill').style.width = pct + '%';
-            document.getElementById('prog-percent').innerText = pct + '%';
-        } else { document.getElementById('prog-wrapper').style.display = 'none'; }
-
+        document.getElementById('daily-time').innerText = Math.round(data.dailyStudyTime || 0) + "m";
+        document.getElementById('total-time').innerText = Math.round(data.totalStudyTime || 0) + "m";
         if(data.flashcards[fcIdx]) {
             document.getElementById('fc-front').innerText = data.flashcards[fcIdx].q;
             document.getElementById('fc-back').innerText = data.flashcards[fcIdx].a;
@@ -330,11 +283,9 @@
         }
     }
 
-    // Emergency save on tab close
-    window.addEventListener('beforeunload', () => { if(uid) setDoc(doc(db, "users", uid), data); });
-
     document.getElementById('login-google').onclick = () => signInWithPopup(auth, prov);
     document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
+    window.closeAuth = () => document.getElementById('auth-gate').style.display = 'none';
 </script>
 </body>
 </html>
