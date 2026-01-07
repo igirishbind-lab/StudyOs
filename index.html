@@ -3,124 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudyOS | By Girish</title>
+    <title>StudyOS | Girish</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --p: #6366f1; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; }
-        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        :root { --p: #6366f1; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --sub: #64748b; }
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s; }
         body { margin: 0; background: var(--bg); color: var(--text); overflow-x: hidden; }
 
         /* AUTH GATE */
-        #auth-gate { 
-            position: fixed; inset: 0; background: white; z-index: 2000; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center;
-        }
+        #auth-gate { position: fixed; inset: 0; background: white; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
 
-        /* SIDEBAR / DRAWER */
-        #sidebar {
-            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
-            background: var(--card); border-right: 1px solid #e2e8f0; z-index: 1500;
-            transition: 0.3s; padding: 20px;
-        }
+        /* SIDEBAR */
+        #sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--card); border-right: 1px solid #e2e8f0; z-index: 1500; transition: 0.3s; padding: 20px; }
         #sidebar.open { left: 0; }
-        .overlay { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.4); 
-            display: none; z-index: 1400; 
-        }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; z-index: 1400; }
 
         /* HEADER */
-        header { 
-            padding: 15px 20px; background: var(--card); display: flex; 
-            align-items: center; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0;
-        }
+        header { padding: 15px 20px; background: var(--card); display: flex; align-items: center; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 1000; }
         .menu-btn { font-size: 1.5rem; cursor: pointer; background: none; border: none; margin-right: 15px; }
 
         /* UI ELEMENTS */
-        .container { max-width: 800px; margin: auto; padding: 20px; }
-        .card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        .btn { padding: 12px 24px; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; width: 100%; transition: 0.2s; }
+        .container { max-width: 600px; margin: auto; padding: 20px; }
+        .card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
+        .btn { padding: 12px; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; width: 100%; display: inline-block; text-align: center; text-decoration: none; }
         .btn-p { background: var(--p); color: white; margin-bottom: 10px; }
-        .btn-guest { background: #f1f5f9; color: var(--text); }
-        input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 10px; }
-        .pfp-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 2px solid var(--p); }
+        .btn-alt { background: #f1f5f9; color: var(--text); margin-bottom: 10px; }
+        input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 10px; outline: none; }
+        input:focus { border-color: var(--p); }
 
+        .pfp-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--p); background: #eee; }
         .section { display: none; }
         .section.active { display: block; }
-        .nav-link { display: block; padding: 15px; color: var(--text); text-decoration: none; font-weight: 600; border-radius: 10px; margin-bottom: 5px; cursor: pointer; }
-        .nav-link:hover { background: #f1f5f9; }
+        .nav-link { display: block; padding: 15px; color: var(--text); font-weight: 600; border-radius: 10px; margin-bottom: 5px; cursor: pointer; }
+        .nav-link:hover { background: #f1f5f9; color: var(--p); }
+
+        /* CALCULATOR */
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .calc-btn { padding: 15px; border-radius: 10px; border: none; background: #f1f5f9; font-weight: bold; cursor: pointer; }
+        .calc-btn:active { background: #e2e8f0; }
+        .calc-display { background: #1e293b; color: white; padding: 20px; border-radius: 10px; text-align: right; font-size: 1.5rem; margin-bottom: 10px; min-height: 60px; }
+
+        /* LISTS */
+        .item-list { list-style: none; padding: 0; }
+        .list-entry { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid #f1f5f9; }
     </style>
 </head>
 <body>
 
 <div id="auth-gate">
-    <h1 style="font-size: 2.5rem; margin-bottom: 10px;">⚡ StudyOS</h1>
-    <p style="color: #64748b; margin-bottom: 30px;">Your ultimate focus companion</p>
+    <h1 style="font-size: 2.5rem; margin-bottom: 5px;">⚡ StudyOS</h1>
+    <p style="color: var(--sub); margin-bottom: 30px;">Premium Study Experience</p>
     <div style="width: 100%; max-width: 300px;">
         <button class="btn btn-p" id="login-google">Sign in with Google</button>
-        <button class="btn btn-guest" onclick="closeAuth()">Continue as Guest</button>
+        <button class="btn btn-alt" onclick="closeAuth()">Continue as Guest</button>
     </div>
-    <p style="margin-top: 50px; font-size: 0.8rem; font-weight: bold; color: #94a3b8;">Made By Girish</p>
+    <p style="margin-top: 50px; font-size: 0.9rem; font-weight: 800; color: var(--sub);">Made By Girish</p>
 </div>
 
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 <div id="sidebar">
     <div style="display:flex; align-items:center; margin-bottom:30px;">
-        <img id="side-pfp" class="pfp-preview" src="https://via.placeholder.com/80" style="margin:0 15px 0 0; width:50px; height:50px;">
-        <div>
+        <img id="side-pfp" class="pfp-preview" src="" style="width:50px; height:50px;">
+        <div style="margin-left:15px">
             <div id="side-name" style="font-weight:800;">Student</div>
-            <div style="font-size:0.7rem; color:gray;">Active Session</div>
+            <div style="font-size:0.7rem; color:var(--sub)">Study Status: Active</div>
         </div>
     </div>
     <div class="nav-link" onclick="openPage('dash')">🏠 Dashboard</div>
-    <div class="nav-link" onclick="openPage('flash')">📚 Flashcards</div>
     <div class="nav-link" onclick="openPage('pomodoro')">⏲️ Pomodoro</div>
+    <div class="nav-link" onclick="openPage('flash')">📚 Flashcards</div>
     <div class="nav-link" onclick="openPage('calc')">🧮 Calculator</div>
     <div class="nav-link" onclick="openPage('settings')">⚙️ Settings</div>
     <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-    <button class="btn btn-guest" onclick="location.reload()">🚪 Logout</button>
+    <button class="btn btn-alt" id="logout-btn">🚪 Logout</button>
 </div>
 
 <header>
     <button class="menu-btn" onclick="toggleMenu()">☰</button>
-    <div style="font-weight: 800; font-size: 1.2rem;">StudyOS</div>
+    <div style="font-weight: 800;">StudyOS</div>
 </header>
 
 <main class="container">
     <div id="dash" class="section active">
-        <h2>Weekly Progress</h2>
-        <div class="card" style="background: linear-gradient(135deg, #6366f1, #a855f7); color:white;">
-            <h3>Welcome back!</h3>
-            <p>You've completed 0 tasks today. Keep it up!</p>
+        <div class="card" style="background: var(--p); color:white;">
+            <p style="margin:0; opacity:0.8;">Current Streak</p>
+            <h1 style="margin:0;">🔥 <span id="streak-val">0</span> Days</h1>
+        </div>
+        <div class="card">
+            <h3>Add Study Task</h3>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="task-input" placeholder="What's the plan?">
+                <button class="btn btn-p" style="width:80px;" onclick="addTask()">Add</button>
+            </div>
+            <ul class="item-list" id="task-list"></ul>
         </div>
     </div>
 
     <div id="pomodoro" class="section">
-        <h2>Focus Timer</h2>
+        <h2>Pomodoro</h2>
         <div class="card" style="text-align:center;">
-            <div id="timer" style="font-size:4rem; font-weight:800; margin-bottom:20px;">25:00</div>
-            <button class="btn btn-p" onclick="startTimer()">Start Session</button>
+            <div id="timer" style="font-size:4rem; font-weight:800; color:var(--p);">25:00</div>
+            <input type="number" id="pomo-mins" placeholder="Set Minutes (e.g. 25)" style="text-align:center;">
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-p" onclick="toggleTimer()" id="pomo-ctrl">Start</button>
+                <button class="btn btn-alt" onclick="resetTimer()">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="flash" class="section">
+        <h2>Flashcards</h2>
+        <div class="card" id="fc-display" onclick="flipFC()" style="height:200px; display:flex; align-items:center; justify-content:center; text-align:center; font-size:1.5rem; cursor:pointer; border:2px dashed var(--p);">
+            Click "Add" below to start
+        </div>
+        <div class="card">
+            <input type="text" id="fc-q" placeholder="Front (Question)">
+            <input type="text" id="fc-a" placeholder="Back (Answer)">
+            <button class="btn btn-p" onclick="addFC()">Add Flashcard</button>
+        </div>
+    </div>
+
+    <div id="calc" class="section">
+        <h2>Calculator</h2>
+        <div class="card">
+            <div class="calc-display" id="calc-screen">0</div>
+            <div class="calc-grid">
+                <button class="calc-btn" onclick="calcAction('C')">C</button>
+                <button class="calc-btn" onclick="calcAction('/')">/</button>
+                <button class="calc-btn" onclick="calcAction('*')">×</button>
+                <button class="calc-btn" onclick="calcAction('-')">-</button>
+                <button class="calc-btn" onclick="calcAction('7')">7</button>
+                <button class="calc-btn" onclick="calcAction('8')">8</button>
+                <button class="calc-btn" onclick="calcAction('9')">9</button>
+                <button class="calc-btn" onclick="calcAction('+')">+</button>
+                <button class="calc-btn" onclick="calcAction('4')">4</button>
+                <button class="calc-btn" onclick="calcAction('5')">5</button>
+                <button class="calc-btn" onclick="calcAction('6')">6</button>
+                <button class="calc-btn" onclick="calcAction('=')">=</button>
+                <button class="calc-btn" onclick="calcAction('1')">1</button>
+                <button class="calc-btn" onclick="calcAction('2')">2</button>
+                <button class="calc-btn" onclick="calcAction('3')">3</button>
+                <button class="calc-btn" onclick="calcAction('0')">0</button>
+            </div>
         </div>
     </div>
 
     <div id="settings" class="section">
-        <h2>Account Settings</h2>
+        <h2>Settings</h2>
         <div class="card">
-            <h3>Profile</h3>
-            <img id="profile-pic" class="pfp-preview" src="https://via.placeholder.com/80">
-            <input type="text" id="edit-name" placeholder="Edit Display Name">
-            <input type="text" id="edit-pfp" placeholder="Paste Image URL for PFP">
-            <button class="btn btn-p" onclick="updateProfile()">Save Changes</button>
-        </div>
-        <div class="card">
-            <h3>System</h3>
-            <button class="btn btn-guest" onclick="localStorage.clear(); location.reload();">Reset All Data</button>
+            <h3>Profile Account</h3>
+            <img id="set-pfp" class="pfp-preview" src="https://via.placeholder.com/80">
+            <input type="text" id="edit-name" placeholder="Display Name">
+            <input type="text" id="edit-pfp" placeholder="Paste PFP Image URL">
+            <button class="btn btn-p" onclick="saveProfile()">Update Profile</button>
         </div>
     </div>
 </main>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyA6fVzFz2IdjYsCt8TK_nGPwqbxrQ8hM3s",
@@ -133,62 +176,132 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
-    // AUTH LOGIC
-    document.getElementById('login-google').onclick = () => signInWithPopup(auth, provider).then(() => closeAuth());
-    
-    window.closeAuth = () => { document.getElementById('auth-gate').style.display = 'none'; };
+    let currentUser = null;
+    let data = { tasks: [], flashcards: [], streak: 0, lastDate: null, name: "Student", pfp: "https://via.placeholder.com/80" };
 
-    onAuthStateChanged(auth, (user) => {
+    // --- AUTH ---
+    document.getElementById('login-google').onclick = () => signInWithPopup(auth, provider);
+    document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
+    window.closeAuth = () => document.getElementById('auth-gate').style.display = 'none';
+
+    onAuthStateChanged(auth, async (user) => {
         if(user) {
-            document.getElementById('side-name').textContent = user.displayName;
-            document.getElementById('side-pfp').src = user.photoURL;
-            document.getElementById('profile-pic').src = user.photoURL;
+            currentUser = user;
+            const docSnap = await getDoc(doc(db, "users", user.uid));
+            if(docSnap.exists()) data = docSnap.data();
+            else { data.name = user.displayName; data.pfp = user.photoURL; }
             closeAuth();
+            renderAll();
         }
     });
 
-    // NAVIGATION LOGIC
-    window.toggleMenu = () => {
-        const side = document.getElementById('sidebar');
-        const over = document.getElementById('overlay');
-        side.classList.toggle('open');
-        over.style.display = side.classList.contains('open') ? 'block' : 'none';
-    };
+    async function sync() { if(currentUser) await setDoc(doc(db, "users", currentUser.uid), data); }
 
+    // --- NAVIGATION ---
+    window.toggleMenu = () => {
+        document.getElementById('sidebar').classList.toggle('open');
+        const over = document.getElementById('overlay');
+        over.style.display = over.style.display === 'block' ? 'none' : 'block';
+    };
     window.openPage = (id) => {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         toggleMenu();
     };
 
-    // PROFILE LOGIC
-    window.updateProfile = () => {
-        const newName = document.getElementById('edit-name').value;
-        const newPfp = document.getElementById('edit-pfp').value;
-        if(newName) {
-            document.getElementById('side-name').textContent = newName;
-            alert("Name updated locally!");
+    // --- DASHBOARD & TASKS ---
+    window.addTask = () => {
+        const input = document.getElementById('task-input');
+        if(!input.value) return;
+        data.tasks.push({text: input.value, done: false});
+        input.value = '';
+        checkStreak();
+        renderAll();
+        sync();
+    };
+    window.toggleTask = (i) => {
+        data.tasks[i].done = !data.tasks[i].done;
+        renderAll();
+        sync();
+    };
+    function checkStreak() {
+        const today = new Date().toDateString();
+        if(data.lastDate !== today) {
+            data.streak++;
+            data.lastDate = today;
         }
-        if(newPfp) {
-            document.getElementById('side-pfp').src = newPfp;
-            document.getElementById('profile-pic').src = newPfp;
-        }
+    }
+
+    // --- POMODORO ---
+    let timerInt; let time = 1500; let active = false;
+    window.toggleTimer = () => {
+        if(!active) {
+            const custom = document.getElementById('pomo-mins').value;
+            if(custom && time === 1500) time = custom * 60;
+            timerInt = setInterval(() => {
+                if(time <= 0) { clearInterval(timerInt); alert("Time's up!"); resetTimer(); }
+                else { time--; updateTimerUI(); }
+            }, 1000);
+            document.getElementById('pomo-ctrl').textContent = "Pause";
+        } else { clearInterval(timerInt); document.getElementById('pomo-ctrl').textContent = "Resume"; }
+        active = !active;
+    };
+    window.resetTimer = () => { clearInterval(timerInt); time = 1500; active = false; updateTimerUI(); document.getElementById('pomo-ctrl').textContent = "Start"; };
+    function updateTimerUI() {
+        let m = Math.floor(time/60); let s = time%60;
+        document.getElementById('timer').textContent = `${m}:${s<10?'0':''}${s}`;
+    }
+
+    // --- CALCULATOR ---
+    let currentCalc = "";
+    window.calcAction = (val) => {
+        const screen = document.getElementById('calc-screen');
+        if(val === 'C') currentCalc = "";
+        else if(val === '=') { try { currentCalc = eval(currentCalc).toString(); } catch { currentCalc = "Error"; } }
+        else currentCalc += val;
+        screen.textContent = currentCalc || "0";
     };
 
-    // TIMER LOGIC
-    let time = 1500;
-    window.startTimer = () => {
-        setInterval(() => {
-            if(time > 0) {
-                time--;
-                let m = Math.floor(time/60); let s = time%60;
-                document.getElementById('timer').textContent = `${m}:${s<10?'0':''}${s}`;
-            }
-        }, 1000);
+    // --- FLASHCARDS ---
+    let fcIdx = 0; let fcFront = true;
+    window.addFC = () => {
+        const q = document.getElementById('fc-q').value;
+        const a = document.getElementById('fc-a').value;
+        if(q && a) { data.flashcards.push({q, a}); renderAll(); sync(); document.getElementById('fc-q').value = ""; document.getElementById('fc-a').value = ""; }
     };
+    window.flipFC = () => {
+        if(data.flashcards.length === 0) return;
+        fcFront = !fcFront;
+        document.getElementById('fc-display').textContent = fcFront ? data.flashcards[fcIdx].q : data.flashcards[fcIdx].a;
+    };
+
+    // --- PROFILE ---
+    window.saveProfile = () => {
+        const name = document.getElementById('edit-name').value;
+        const pfp = document.getElementById('edit-pfp').value;
+        if(name) data.name = name;
+        if(pfp) data.pfp = pfp;
+        renderAll();
+        sync();
+        alert("Profile Updated!");
+    };
+
+    function renderAll() {
+        const list = document.getElementById('task-list');
+        list.innerHTML = '';
+        data.tasks.forEach((t, i) => {
+            list.innerHTML += `<li class="list-entry"><span style="${t.done?'text-decoration:line-through;opacity:0.5':''}">${t.text}</span><input type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${i})"></li>`;
+        });
+        document.getElementById('streak-val').textContent = data.streak;
+        document.getElementById('side-name').textContent = data.name;
+        document.getElementById('side-pfp').src = data.pfp;
+        document.getElementById('set-pfp').src = data.pfp;
+        if(data.flashcards.length > 0) document.getElementById('fc-display').textContent = data.flashcards[fcIdx].q;
+    }
 </script>
 </body>
-</html>
-
+    </html>
+    
