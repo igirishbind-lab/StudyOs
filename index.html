@@ -59,15 +59,25 @@
 
 <div id="auth-gate">
     <div class="auth-card">
-        <h1>⚡ StudyOS</h1>
-        <p style="color: var(--p); font-weight: 800;">Made By Girish</p>
+        
+                <img src="https://i.ibb.co/DPMpkcbx/1767846395467.png" 
+             style="width: 100px; height: 100px; border-radius: 22px; margin-bottom: 10px; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);">
+        
+        <h1 style="margin: 0; font-size: 2.2rem; letter-spacing: -1px;">StudyOS</h1>
+        <p style="color: #6366f1; font-weight: 800; margin-top: 5px; margin-bottom: 25px; font-size: 0.9rem;">Made By Girish</p>
+        
         <input type="email" id="auth-email" class="auth-input" placeholder="Email">
         <input type="password" id="auth-pass" class="auth-input" placeholder="Password">
+        
         <button class="btn-p" id="email-login">Login / Sign Up</button>
-        <button class="btn-p" id="google-login" style="background:#ea4335">Google Login</button>
-        <button class="btn-p" onclick="closeAuth()" style="background:#64748b">Guest Access</button>
+        <button class="btn-p" id="google-login" style="background:#ea4335; margin-top: 10px;">Google Login</button>
+        
+        <div style="margin-top: 20px; border-top: 1px solid var(--border); pt-15">
+             <button class="btn-p" onclick="closeAuth()" style="background:transparent; color: var(--p); border: 1px solid var(--border); margin-top: 15px;">Guest Access</button>
+        </div>
     </div>
 </div>
+
 
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
